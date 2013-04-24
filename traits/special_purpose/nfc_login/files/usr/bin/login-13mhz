@@ -1,0 +1,10 @@
+#!/bin/sh
+LOGIN_HOST=heidi.shack:5000
+# initial sleep, wait for usbfs and shit to initialize
+sleep 10
+. /usr/bin/login-lib
+while sleep 1; do
+    uid=$(nfc-list | grep UID | cut -d: -f 2 | sed 's/ //g')
+    do_nfc_login "$uid"
+done
+
