@@ -16,15 +16,17 @@ config zone
 config zone
     option name     wan
     option network      'wan'
-    option input        REJECT
+    option input    	REJECT
     option output       ACCEPT
     option forward      REJECT
     option masq     1
+    option masq_dest !192.168.211.0/24 
     option mtu_fix      1
 
+# mandatory
 config forwarding
     option src      lan
-    option dest     wlan
+    option dest     wan
 
 config forwarding
     option src      wlan

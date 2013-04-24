@@ -1,0 +1,2 @@
+PACKAGES="dnsmasq"
+DEPENDS="core/firstrun"

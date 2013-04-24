@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euf
 IMAGEBUILDER_URL="http://downloads.openwrt.org/attitude_adjustment/12.09-beta2/ar71xx/generic/OpenWrt-ImageBuilder-ar71xx_generic-for-linux-i486.tar.bz2"
+#IMAGEBUILDER_URL="http://downloads.openwrt.org/snapshots/trunk/ar71xx/OpenWrt-ImageBuilder-ar71xx_generic-for-linux-x86_64.tar.bz2"
 
 cd $(dirname $(readlink -f $0))
 if [ x"${1:-}" == x ];then
@@ -11,6 +12,8 @@ if [ x"${1:-}" == x ];then
 fi
 PROFILE=$1
 if [ ! -e builder/Makefile ]; then
+    #wget $IMAGEBUILDER_URL -O- | tar xj OpenWrt-ImageBuilder-ar71xx_generic-for-linux-x86_64
+    #mv OpenWrt-ImageBuilder-ar71xx_generic-for-linux-x86_64 builder
     wget -O- $IMAGEBUILDER_URL | tar xj OpenWrt-ImageBuilder-ar71xx_generic-for-linux-i486
     mv -f OpenWrt-ImageBuilder-ar71xx_generic-for-linux-i486 builder
     echo "Builder successfully downloaded"
