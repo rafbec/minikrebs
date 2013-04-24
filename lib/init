@@ -12,7 +12,7 @@ rm -r bin/ || echo "no bindir, skipping removal"
 if [ -e ./custom_make ];then
     echo "Starting Custom Make"
     sh ./custom_make 2>/dev/null | while read line; do
-        echo -n .
+        printf "."
     done
 else
     echo "No Custom Make Script exists, bailing out!"

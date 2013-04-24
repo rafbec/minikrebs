@@ -1,8 +1,14 @@
 #!/bin/sh
 set -e
 set -u
-if [ -e /etc/firstrun.commands -a ! -e /etc/firstrun.complete ];then
-    if sh /etc/firstrun.commands ;then
-        touch /etc/firstrun.complete
+if [ -e /etc/firstrun.d/ -a ! -e /etc/firstrun.complete ];then
+  find /etc/firstrun.d/ -type f | while read cmd; do
+    if ! sh  "$cmd" ;then
+      logger "$cmd successful"
+    else
+      logger "$cmd failed, bailing out!"
+      exit 1
     fi
+  done
+  touch /etc/firstrun.complete
 fi

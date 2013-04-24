@@ -28,7 +28,7 @@ find . | while read line; do
     if [ -e "$line/MANIFEST" -o -e "$line/files" ];then
         echo "$line" | indent 2
         if [ -e "$line/MANIFEST" -a -z "${HIDE_PKGS:-}" ];then
-            source "$line/MANIFEST"
+            . "$line/MANIFEST"
             echo "Includes Packages: $PACKAGES" | indent 4
         fi
         if [ -e "$line/files" -a -n "${SHOW_FILES:-}" ];then

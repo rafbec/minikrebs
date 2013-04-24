@@ -4,7 +4,7 @@ IMAGEBUILDER_URL="http://downloads.openwrt.org/attitude_adjustment/12.09-beta2/a
 #IMAGEBUILDER_URL="http://downloads.openwrt.org/snapshots/trunk/ar71xx/OpenWrt-ImageBuilder-ar71xx_generic-for-linux-x86_64.tar.bz2"
 
 cd $(dirname $(readlink -f $0))
-if [ x"${1:-}" == x ];then
+if [  -z "${1:-}"  ];then
     echo "usage: $0 PROFILE"
     echo
     HIDE_TRAITS="true" sh $(dirname $(readlink -f $0))/bin/available_profiles

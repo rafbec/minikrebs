@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -eu
 usage() {
     cat << EOF
@@ -32,29 +32,27 @@ indent() {
 }
 
 handle_append(){
-    local CURRENT_TRAIT_DIR="$1"
     cat ${APPEND_FILES}| while read i;do
-        [ -e "$CURRENT_TRAIT_DIR/files/$i" ]  && cat "$CURRENT_TRAIT_DIR/files/$i" >> "$BUILD_DIR/customfiles/$i"
+        [ -e "$1/files/$i" ]  && cat "$1/files/$i" >> "$BUILD_DIR/customfiles/$i"
     done
 }
 handle_trait_dir(){
-    local CUR="$(readlink -f $1 )"
-    if [ "$(readlink -f $TRAIT_DIR )" = "$CUR" ];then
+    if [ "$(readlink -f $TRAIT_DIR )" = "$1" ];then
         return 0
     else
         # higher level traits supersede more general definitions
-        cd "$CUR"
+        cd "$1"
         #echo "in $CUR" >&2
 
-        handle_trait_dir .. ||:
-        if [ -e "$CUR/files" ] ;then
-            rsync -rl --exclude-from="$APPEND_FILES" "$CUR/files/"* "$BUILD_DIR/customfiles"
-            handle_append "$CUR"
+        handle_trait_dir $(readlink -f ..) ||:
+        if [ -e "$1/files" ] ;then
+            rsync -rl --exclude-from="$APPEND_FILES" "$1/files/"* "$BUILD_DIR/customfiles"
+            handle_append "$1"
         fi
-        if [ -e "$CUR/MANIFEST" ];then
-            source "$CUR/MANIFEST"
-            echo -n "${PACKAGES:-} " >> $PKG_FILE
-            echo -n "${OVERLAY_PACKAGES:-} " >> $OVERLAY_PKG_FILE
+        if [ -e "$1/MANIFEST" ];then
+            . "$1/MANIFEST"
+            printf '%s' "${PACKAGES:-} " >> $PKG_FILE
+            printf '%s' "${OVERLAY_PACKAGES:-} " >> $OVERLAY_PKG_FILE
         fi
     fi
 
@@ -68,12 +66,12 @@ build_custom_make(){
         "$BUILD_DIR/custom_make"
 }
 main (){
-    rm -r "$BUILD_DIR/customfiles" || :
-    rm $OVERLAY_PKG_FILE $PKG_FILE || :
-    mkdir "$BUILD_DIR/customfiles" || :
+    rm -rf "$BUILD_DIR/customfiles" 
+    rm -f $OVERLAY_PKG_FILE $PKG_FILE 
+    mkdir -p "$BUILD_DIR/customfiles" 
     ALL_PACKAGES=`cat "$PROFILE" | while read trait;do
         echo "Handling $TRAIT_DIR/$trait" >&2        
-        handle_trait_dir "$TRAIT_DIR/$trait" ||:
+        handle_trait_dir "$(readlink -f $TRAIT_DIR/$trait)" ||:
     done`
     build_custom_make "$PLATFORM" 
 }
