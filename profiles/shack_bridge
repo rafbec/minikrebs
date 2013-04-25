@@ -1,0 +1,6 @@
+core
+core/firstrun
+minimal/no-ppp
+private/shack_maintenancenet
+network/eth-wifi-nat
+krebs

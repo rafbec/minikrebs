@@ -1,0 +1,32 @@
+#!/bin/sh
+LOGIN_HOST=heidi.shack:5000
+# initial sleep, wait for usbfs and shit to initialize
+sleep 10
+do_nfc_login(){
+    [ -z "$uid" ] && return
+    lcd-write "Logging in ..."
+    online=$(wget -O- http://$LOGIN_HOST/user/$uid/online 2>/dev/null)
+    name=$(wget -O- http://$LOGIN_HOST/user/$uid/name 2>/dev/null)
+
+    if [ -z "$online" ];then
+        led tp-link:green:lan timer
+        lcd-write "$uid - No Such User..."
+    elif [ -e /tmp/nfc_refresh ];then
+        action="login"
+        lcd-write "Refreshing $name" 
+    elif [ "$online" = "false" ];then
+        action="login"
+        lcd-write "Welcome $name"
+        led tp-link:green:3g timer
+    else
+        lcd-write "Good Bye $name"
+        action="logout"
+        led tp-link:green:wlan timer
+    fi
+    wget -O- http://$LOGIN_HOST/user/$uid/$action &>/dev/null
+    echo $uid $action
+    sleep 5
+    all_led none
+    lcd-write "Welcome to shack,   please log in!"
+}
+

@@ -1,0 +1,12 @@
+#!/bin/sh
+LOGIN_HOST=heidi.shack:5000
+# initial sleep, wait for usbfs and shit to initialize
+#sleep 10
+. /usr/bin/login-lib
+while : ;do
+    cat /dev/ttyUSB0 | while read uid ; do
+        echo "'$uid'"
+        do_nfc_login "$uid"
+        exit
+    done
+done

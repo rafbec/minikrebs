@@ -1,6 +1,6 @@
 #!/bin/sh
 action=$1
 find /sys/class/leds/  -maxdepth 1 -mindepth 1 | while read led;do
-    echo $action $led
+    led ${led##/sys/class/leds/} $action
 done
     

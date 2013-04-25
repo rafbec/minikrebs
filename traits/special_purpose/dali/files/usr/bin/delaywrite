@@ -1,0 +1,9 @@
+#!/bin/sh
+file=$(cat)
+bytes=${#file}
+for i in `seq $bytes`;do
+    echo  "$file" | cut -c $i | tr -d '\n'
+    # TODO - if a character is a newline, do not trim, remove the line below then
+    [ $bytes -eq $i ] && echo 
+    for j in `seq 3000` ; do : ;done
+done

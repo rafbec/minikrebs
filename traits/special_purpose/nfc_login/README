@@ -5,9 +5,14 @@ rfid-card.
 # hardware
 The current version uses a vfd-lcd and a mr3020 but it should work with all
 openwrt-enabled routers with usb.
+
+The NFC-Reader attached is:
+    - SCM 3711
+
 # software
 - the router uses the rest-interface of user_suppository to check for users and
   logs them either in or out.
 
 pu- shing the button on the wrt-router turns on "refresh" mode which will not
 toggle the state of the user, but refresh the login.
+
