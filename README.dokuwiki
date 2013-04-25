@@ -10,9 +10,27 @@ Longer Version:
 The project minikrebs is a meta-project for a number of special-purpose images for the TP-Link WR703n (or MR3020) Wireless Router. These Images are called `profiles` in the context and are build with the help of the OpenWRT Image Builder. Building the complete image is very important as the scarcest  resource of the wr703n is its 4MB Flash memory
 
 ===== TLDR ======
-This is how you get a cool webcam-streamer firmware for your WR703N:
+Get your own minikrebs in 3 easy steps
+
+
+**Step 1:** clone the minikrebs repository:
+   git clone https://github.com/krebscode/minikrebs && cd minikrebs
+   
+
+
+**Step 2:** Build a cool webcam-streamer firmware for your WR703N:
    ./prepare instacam && builder/init 
 Use it to flash your minirouter, password is `minikrebs`
+
+For the MR3020 run:
+   PLATFORM=TLMR3020 ./prepare instacam && builder/init
+
+
+**Step 3:** Load the image to onto the WRT-Platform 
+   upload via web interface (for fresh install)
+or with OpenWRT already installed 
+   # copy (via scp/wget or something) builder/bin/ar71xx/openwrt-ar71xx-generic-tl-wr703n-v1-squashfs-factory.bin (or mr3020 ) to minikrebs:/tmp
+   (on router) # mtd write /tmp/ar71xx/openwrt-ar71xx-generic-tl-wr703n-v1-squashfs-factory.bin firmware
 
 ===== DISCLAMER =====
 All code is pseudo-code and it might or might not work on your system. Copy-Paste with extreme caution.
