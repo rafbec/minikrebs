@@ -1,0 +1,7 @@
+core
+minimal/no-ppp
+minimal/no-dnsmasq
+network/client-mode
+special_purpose/dali
+special_purpose/dali_web
+krebs

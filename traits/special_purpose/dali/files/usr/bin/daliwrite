@@ -1,0 +1,4 @@
+#!/bin/sh
+
+PORT=/dev/ttyATH0
+echo "$@" | delaywrite > $PORT
