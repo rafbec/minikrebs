@@ -1,1 +1,1 @@
-[ -e /packages/ ] && opkg install /packages/*
+[ ! -e /packages/ ] || opkg install /packages/*

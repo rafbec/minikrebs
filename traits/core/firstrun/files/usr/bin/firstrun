@@ -2,9 +2,11 @@
 set -e
 set -u
 if [ -e /etc/firstrun.d/ -a ! -e /etc/firstrun.complete ];then
-  find /etc/firstrun.d/ -type f | while read cmd; do
+  find /etc/firstrun.d/ -type f | grep -v '.complete$' | while read cmd; do
+  [ ! -e ${cmd}.complete ] || continue
     if ! sh  "$cmd" ;then
       logger "$cmd successful"
+      touch ${cmd}.complete
     else
       logger "$cmd failed, bailing out!"
       exit 1
