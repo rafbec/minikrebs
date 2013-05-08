@@ -2,4 +2,5 @@ core
 minimal/no-ppp
 minimal/no-dnsmasq
 network/client-mode
+network/autoconnect
 krebs
