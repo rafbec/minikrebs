@@ -1,1 +1,1 @@
-OVERLAY_PACKAGES="aircrack-ng libopenssl libpcap"
+OVERLAY_PACKAGES="aircrack-ng libopenssl libpcap reaver"
