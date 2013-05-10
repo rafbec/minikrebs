@@ -1,0 +1,7 @@
+core
+core/firstrun
+minimal/no-ppp
+minimal/no-dnsmasq
+network/client-mode
+private/shack_maintenancenet
+special_purpose/dali

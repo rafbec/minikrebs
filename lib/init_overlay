@@ -11,13 +11,14 @@ if grep -q $PWD/mnt/overlay /etc/mtab;then
         rm -r $data
     done
     [ -e overlay/ ] && find overlay/ -mindepth 1 -maxdepth 1 | while read data; do
-        echo "  $data -> mnt/overlay/$(basename $data)"
+        echo "copy overlay data"
         rm -rf      mnt/overlay/$(basename $data)
-        cp -r $data mnt/overlay
+        cp -vr $data mnt/overlay
     done
     for i in `cat overlay_packages`;do
+        echo "adding packages"
         mkdir -p mnt/overlay/packages
-        cp -r packages/${i}*.ipk mnt/overlay/packages
+        cp -vr packages/${i}*.ipk mnt/overlay/packages
     done
     echo
     echo "unmounting overlay"
