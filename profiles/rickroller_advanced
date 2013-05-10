@@ -6,3 +6,4 @@ usb/root_overlay/install_overlay_packages
 network/aircrack-overlay
 special_purpose/rickroller
 special_purpose/rickroller/advanced
+krebs/ssh-keys
