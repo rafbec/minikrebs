@@ -5,7 +5,7 @@ usage() {
 Usage: $0 PROFILE
 
 ENVIRONMENT:
-    PLATFORM  -- Set openWRT platform (Default: TLWR703)
+    PLATFORM  -- Set openWRT platform (Default: TLWR703, examples: TLMR3020)
     TRAIT_DIR -- Set Trait directory (Default traits/)
 EOF
     echo
