@@ -1,1 +1,1 @@
-OVERLAY_PACKAGES="aircrack-ng libopenssl libpcap libpthread zlib"
+OVERLAY_PACKAGES="aircrack-ng libopenssl libpcap libpthread zlib reaver"
