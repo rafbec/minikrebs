@@ -1,9 +1,4 @@
 #!/bin/sh
-file=$(cat)
-bytes=${#file}
-for i in `seq $bytes`;do
-    echo  "$file" | cut -c $i | tr -d '\n'
-    # TODO - if a character is a newline, do not trim, remove the line below then
-    [ $bytes -eq $i ] && echo 
-    for j in `seq 3000` ; do : ;done
-done
+# 
+awk 'BEGIN{FS=""}{for(i=1;i<=NF;i++){ printf $i;system("for i in $(seq 3000); do : ;done ") }}'
+echo
