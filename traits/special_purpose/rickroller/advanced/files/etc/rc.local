@@ -1,0 +1,2 @@
+ifconfig at0 192.168.23.1
+ifconfig at0 up
