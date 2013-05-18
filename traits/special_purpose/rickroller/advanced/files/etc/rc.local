@@ -1,2 +1,12 @@
-ifconfig at0 192.168.23.1
-ifconfig at0 up
+if command -v airbase-ng >dev/null ;then
+    # channel 6
+    # Rebroadcast every 30 seconds
+    # Respond to all Probes
+    # essid to linksys
+    # be verbose
+    # interface wlan0
+    airbase-ng -c 6 -C 30 -P --essid linksys -v wlan0 &
+    sleep 3
+    ifconfig at0 192.168.23.1
+    ifconfig at0 up
+fi
