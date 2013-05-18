@@ -1,0 +1,1 @@
+uci set wireless.@wifi-iface[0].mode='monitor'
