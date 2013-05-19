@@ -1,1 +1,2 @@
+OVERLAY_PACKAGES="lighttpd lighttpd-mod-cgi libopenssl zlib libpcre libpthread"
 DEPENDS="core/firstrun network/aircrack-overlay network/interactive-tools"
