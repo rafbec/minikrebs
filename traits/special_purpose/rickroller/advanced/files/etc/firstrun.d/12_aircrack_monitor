@@ -1,1 +1,3 @@
 uci set wireless.@wifi-iface[0].mode='monitor'
+uci commit wireless
+wifi

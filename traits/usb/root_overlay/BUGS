@@ -1,0 +1,4 @@
+- if the usb-stick is not inserted BEFORE flashing the stick will not be
+  initialized ( race condition)
+- if there is no 'real' overlay (e.g. only tmpfs overlay) inserting the stick
+  will result in an endless reboot loop
