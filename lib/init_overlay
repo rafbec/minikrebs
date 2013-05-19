@@ -17,7 +17,7 @@ if grep -q $PWD/mnt/overlay /etc/mtab;then
     echo "[*] adding packages"
     for i in `cat overlay_packages`;do
         mkdir -p mnt/overlay/packages
-        cp -vr packages/${i}*.ipk mnt/overlay/packages
+        cp -vr packages/${i}_*.ipk mnt/overlay/packages
     done
     echo
     echo "[*] unmounting overlay"
