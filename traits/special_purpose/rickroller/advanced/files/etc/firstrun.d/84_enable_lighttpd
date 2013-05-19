@@ -1,0 +1,2 @@
+/etc/init.d/lighttpd enable
+/etc/init.d/lighttpd start 
