@@ -1,0 +1,11 @@
+core
+core/firstrun
+minimal/no-ppp
+minimal/no-dnsmasq
+network/client-mode
+network/interactive-tools
+network/autoconnect
+network/aircrack-overlay
+krebs/infest
+krebs/ssh_keys
+usb/root_overlay/install_overlay_packages
