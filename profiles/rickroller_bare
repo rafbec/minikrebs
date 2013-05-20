@@ -1,4 +1,4 @@
 core/firstrun
 minimal/no-ppp
 network/open-wifi-ap
-special_purpose/rickroller
+special_purpose/rickroller/uhttpd

@@ -1,1 +1,1 @@
-OVERLAY_PACKAGES="aircrack-ng libopenssl libpcap libpthread zlib libsqlite3 reaver kmod-tun"
+OVERLAY_PACKAGES="aircrack-ng libopenssl libpcap libpthread zlib libsqlite3 reaver kmod-tun ip wireless-tools"

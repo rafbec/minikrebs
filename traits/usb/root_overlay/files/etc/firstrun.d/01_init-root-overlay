@@ -1,6 +1,6 @@
 if [ -e /tmp/overlay-disabled ];then                         
-        umount /overlay
-        /etc/init.d/fstab restart                            
+        #umount /overlay
+        #/etc/init.d/fstab restart                            
         tar -C /overlay -cvf - . | tar -C /tmp/overlay-disabled -xf -
         /etc/init.d/fstab overlay_enable                     
         reboot # make sure that we have overlay             

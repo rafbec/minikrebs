@@ -1,2 +1,1 @@
-PACKAGES="uhttpd uhttpd-mod-tls"
 REQUIRE="network/open-wifi-ap"
