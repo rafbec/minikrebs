@@ -6,7 +6,7 @@ if command -v airbase-ng >/dev/null ;then
     # be verbose
     # interface wlan0
     ifconfig wlan0 0.0.0.0
-    airbase-ng -c 6 -C 30 -P --essid linksys -v wlan0 &
+    airbase-ng -c 6 -C 30 -P wlan0 > /var/log/airbase.log &
     sleep 3
     ifconfig at0 192.168.23.1
     ifconfig at0 up
