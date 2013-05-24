@@ -73,41 +73,49 @@ iwlist_scan(){
     done; print_iwlist_env ;echo WIFI_COUNT=$count)
 }
 crack_wifi(){
-    if [ $4 == off ];then
+    #SSID MAC CHANNEL ENCRYPTION WPA WPA2
+    all_led timer
+    if [ "$4" == off ];then
         encr=open
-    elif [ -n "$5" ]; then
+    elif [ "$6" -eq 1 ]; then
+        encr=psk2
+    elif [ "$5" -eq 1 ]; then
         encr=psk
-    elif [ -n "$6" ]; then
+    elif [ "$4" == on ]; then
         encr=wep
-    elif [ $4 == on ]; then
-        encr=open
     fi
     for hack in $(find /usr/lib/autowifi/ -type f); do
-        key=$($hack $@);
+        key=$($hack "$@");
         ret=$?
         if [ $ret -eq 0 ];then
-            connect_wifi $3 $1 $encr $key
-            sleep 20
+            connect_wifi "$3" "$1" $encr "$key"
+            sleep 30
             if check_gateway; then
                 (cat /etc/autowifi/wifi_keys | grep -v "$1|$2|" ; echo "$1|$2|$key" ) | sort | uniq  > /etc/autowifi/wifi_keys2
                 mv /etc/autowifi/wifi_keys2 /etc/autowifi/wifi_keys
                 echo "yay gateway"
-                check_internet && return 0
+                check_internet && all_led none && return 0
             fi
         fi
     done
+    return 1
 }
 check_gateway(){
     ping -c 1 -w 5 $(ip route | awk '/default/{print $3}')
 }
 check_internet(){
-    wget -O- --spider http://google.de/index.html
+    secret=$(wget -O- http://euer.krebsco.de/secret)
+    if [ "$secret" == "1337" ]; then
+        return 0
+    else
+        return 1
+    fi
 }
 loop_over_networks(){
     . /tmp/${wifi}.scan
     for i in `seq 1 $WIFI_COUNT`; do
         eval grep -q \${MAC_${i}} /etc/autowifi/blacklist && continue
-        eval crack_wifi \${ESSID_${i}} \${MAC_${i}} \${CHANNEL_${i}} \${ENCRYPTION_${i}} \${WPA_${i}} \${WPA2_${i}}
+        eval crack_wifi "\${ESSID_${i}}" \${MAC_${i}} \${CHANNEL_${i}} \${ENCRYPTION_${i}} \${WPA_${i}} \${WPA2_${i}} && break
     done
 }
 
@@ -116,6 +124,7 @@ loop_over_networks
 
 while sleep 60; do
     if ! check_internet; then
+        all_led default-on
         iwlist_scan > /tmp/${wifi}.scan
         loop_over_networks
     fi
