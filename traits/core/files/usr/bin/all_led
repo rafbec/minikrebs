@@ -1,5 +1,5 @@
 #!/bin/sh
-action=$1
+action=${1?\$1 must be ACTION (none|default-on|timer|...)}
 find /sys/class/leds/  -maxdepth 1 -mindepth 1 | while read led;do
     led ${led##/sys/class/leds/} $action
 done
