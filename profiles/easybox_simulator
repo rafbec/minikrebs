@@ -1,0 +1,5 @@
+core/firstrun
+minimal/no-ppp
+network/wifi-dhcp
+gui/luci/uhttpd
+special_puropose/easybox_simulator
