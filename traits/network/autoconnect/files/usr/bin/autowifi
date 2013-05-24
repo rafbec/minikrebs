@@ -1,3 +1,105 @@
-#!/usr/bin/sh
+#!/bin/sh -x
+wifi=wlan0
+iface=@wifi-iface[0]
+radio=$(uci get wireless.${iface}.device)
 connect_wifi(){
+    # channel ssid encryption key
+    uci set wireless.${iface}.mode=sta
+
+    ifconfig $wifi up
+    uci set wireless.${radio}.channel=$1
+    uci set "wireless.${iface}.ssid=$2"
+    if [ $3 == "none" ] ; then
+        uci set wireless.${iface}.encryption=none
+        uci -q delete wireless.${iface}.key
+    else
+        uci set "wireless.${iface}.key=$4"
+        uci set wireless.${iface}.encryption=$3
+    fi 
+    uci commit wireless
+    wifi up
 }
+
+iwlist_scan(){
+    ifconfig $wifi up
+
+    count=0
+    
+    iwlist scan ${1:-} 2>/dev/null | ( while read line;
+    do
+        case "$line" in
+            *"Cell "*)
+                #echo
+                : $((count+=1))
+                echo MAC_${count}="${line#*Address: }"
+                ;;
+            *Channel:*)
+                echo CHANNEL_${count}="${line#*:}"
+                ;;
+            *Quality=*)
+                echo QUALITY_${count}="`printf '%s' ${line#*Quality=} | cut -d/  -f 1`"
+                ;;
+            *"Encryption key:"*)
+                echo ENCRYPTION_${count}="${line#*key:}"
+                ;;
+            *ESSID:*)
+                echo ESSID_${count}="${line#*ESSID:}"
+                ;;
+            *"IE: IEEE 802.11i/WPA2"*)
+                echo WPA2_${count}=1
+                ;;
+            *"IE: WPA Version 1"*)
+                echo WPA_${count}=1
+                ;;
+            *);;
+        esac
+    done; echo WIFI_COUNT=$count)
+}
+crack_wifi(){
+    if [ -n "$6" ];then
+        encr=psk2
+    elif [ -n "$5" ]; then
+        encr=psk
+    elif [ "$4" == on ]; then
+        encr=wep
+    else
+        encr=open
+    fi
+    for hack in $(find /usr/lib/autowifi/ -type f); do
+        key=$($hack $@);
+        ret=$?
+        if [ $ret -eq 0 ];then
+            connect_wifi $3 $1 $encr $key
+            sleep 20
+            if check_gateway; then
+                (cat /etc/autowifi/wifi_keys | grep -v "$1|$2|" ; echo "$1|$2|$key" ) | sort | uniq  > /etc/autowifi/wifi_keys2
+                mv /etc/autowifi/wifi_keys2 /etc/autowifi/wifi_keys
+                echo "yay gateway"
+                check_internet && return 0
+            fi
+        fi
+    done
+}
+check_gateway(){
+    ping -c 1 -w 5 $(ip route | awk '/default/{print $3}')
+}
+check_internet(){
+    wget -O- --spider http://google.de/index.html
+}
+loop_over_networks(){
+    . /tmp/${wifi}.scan
+    for i in `seq 1 $WIFI_COUNT`; do
+        eval grep -q \${MAC_${i}} /etc/autowifi/blacklist && continue
+        eval crack_wifi \${ESSID_${i}} \${MAC_${i}} \${CHANNEL_${i}} \${ENCRYPTION_${i}} \${WPA_${i}} \${WPA2_${i}}
+    done
+}
+
+iwlist_scan > /tmp/${wifi}.scan
+loop_over_networks
+
+while sleep 60; do
+    if ! check_internet; then
+        iwlist_scan > /tmp/${wifi}.scan
+        loop_over_networks
+    fi
+done
