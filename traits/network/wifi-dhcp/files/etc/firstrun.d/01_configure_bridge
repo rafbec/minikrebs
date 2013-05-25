@@ -1,0 +1,18 @@
+uci set network.loopback=interface
+uci set network.loopback.ifname=lo
+uci set network.loopback.proto=static
+uci set network.loopback.ipaddr=127.0.0.1
+uci set network.loopback.netmask=255.0.0.0
+
+uci set network.wan=interface
+uci set network.wan.ifname=eth0
+uci set network.wan.proto=dhcp
+
+uci set network.lan=interface
+uci set network.lan.ifname=wlan0
+uci set network.lan.proto=static
+uci set network.lan.ipaddr=192.168.211.1
+uci set network.lan.netmask=255.255.255.0
+
+uci commit network
+/etc/init.d/network restart

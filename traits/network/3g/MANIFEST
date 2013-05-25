@@ -1,0 +1,7 @@
+PACKAGES="comgt usb-modeswitch kmod-usb-serial"
+# comgt chat
+# usb-modeswitch libusb
+# kmod-usb-serial might only be needed for (k5005  12d1:14c3 )
+# probably kmod-usb-serial-wwan
+# see: http://wiki.openwrt.org/doc/recipes/3gdongle
+#      http://oleniner.blogspot.de/2011/11/tp-link-3420-openwrt-huawei-e398-3g.html
