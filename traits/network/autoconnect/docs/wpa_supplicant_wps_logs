@@ -1,0 +1,41 @@
+# working
+wlan0: Trying to associate with 14:cf:92:87:10:74 (SSID='hardbox' freq=2437 MHz)
+wlan0: Association request to the driver failed
+wlan0: Associated with 14:cf:92:87:10:74
+wlan0: CTRL-EVENT-EAP-STARTED EAP authentication started
+wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=14122 method=1
+wlan0: CTRL-EVENT-EAP-METHOD EAP vendor 14122 method 1 (WSC) selected
+WPS: Received old AP configuration from AP
+wlan0: WPS-CRED-RECEIVED
+wlan0: WPS-FAIL msg=11 config_error=0
+wlan0: CTRL-EVENT-EAP-FAILURE EAP authentication failed
+wlan0: WPS-FAIL
+wlan0: CTRL-EVENT-DISCONNECTED bssid=14:cf:92:87:10:74 reason=3 locally_generated=1
+ioctl[SIOCSIWFREQ]: Device or resource busy
+wlan0: Trying to associate with 14:cf:92:87:10:74 (SSID='hardbox' freq=2437 MHz)
+wlan0: Association request to the driver failed
+wlan0: Associated with 14:cf:92:87:10:74
+wlan0: WPA: Key negotiation completed with 14:cf:92:87:10:74 [PTK=CCMP GTK=TKIP]
+wlan0: CTRL-EVENT-CONNECTED - Connection to 14:cf:92:87:10:74 completed [id=0 id_str=]
+
+# Wrong PIN
+ioctl[SIOCSIWFREQ]: Device or resource busy
+wlan0: Trying to associate with 14:cf:92:87:10:74 (SSID='hardbox' freq=2437 MHz)
+wlan0: Association request to the driver failed
+wlan0: Associated with 14:cf:92:87:10:74
+wlan0: CTRL-EVENT-EAP-STARTED EAP authentication started
+wlan0: CTRL-EVENT-EAP-PROPOSED-METHOD vendor=14122 method=1
+wlan0: CTRL-EVENT-EAP-METHOD EAP vendor 14122 method 1 (WSC) selected
+wlan0: WPS-FAIL msg=10 config_error=18
+wlan0: CTRL-EVENT-EAP-FAILURE EAP authentication failed
+wlan0: WPS-FAIL
+wlan0: Authentication with 14:cf:92:87:10:74 timed out.
+wlan0: CTRL-EVENT-DISCONNECTED bssid=14:cf:92:87:10:74 reason=3 locally_generated=1
+
+
+# Rate Limiting
+wlan0: Trying to associate with 14:cf:92:87:10:74 (SSID='hardbox' freq=2437 MHz)
+wlan0: Association request to the driver failed
+wlan0: Associated with 14:cf:92:87:10:74
+wlan0: CTRL-EVENT-EAP-STARTED EAP authentication started
+wlan0: CTRL-EVENT-EAP-FAILURE EAP authentication failed
