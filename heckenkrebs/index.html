@@ -1,0 +1,23 @@
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <title>Der Heckenkrebs</title>
+    
+</head>
+<body>
+    <p>Der Heckenkrebs ist ein auf OpenWRT basierendes Projekt, welches sich mit dem automatischen Pentesten von Wireless-Lan auseinandersetzt.</p>
+    <h4>Konfiguration:</h4>
+    <ul>
+        <li>Wifi-keys koennen in /etc/autowifi/wifi_keys gespeichert werden. Syntax hierür ist $ESSID|$BSSID|$PASSWORT</li>
+        <li>Blacklisten von Accesspoints ist moeglich. hierfuer muss lediglich die BSSID in die Datei /etc/autowifi/blacklist geschrieben werden</li>
+    </ul>
+    <p>Das knackan der Accesspoints ist modular aufgebaut. Die Module befinden sich in /usr/lib/autowifi/plugins.</p>
+    <p>Zurzeit gibt es leider nur ein Modul fuer den Easybox Key-generator, aber weitere folgen bald.</p>
+    
+    <h4>Eigene Module schreiben:</h4>
+    <p>Eigene Module koennen einfach hinzugefuegt werden. Das autowifi Script ruft die Module in alphabetischer Reihenfolge auf.</p>
+    <p>Uebergabeparameter von autowifi sind: $1=ESSID $2=BSSID $3=CHANNEL $4=ENCRYPTION(off oder on) $5=WPA(0 oder 1) $6=WPA2(0 oder 1)</p>
+    
+</body>
+</html>
