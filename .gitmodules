@@ -1,0 +1,3 @@
+[submodule "traits/network/autoconnect/files"]
+	path = traits/network/autoconnect/files
+	url = https://github.com/krebscode/autowifi
