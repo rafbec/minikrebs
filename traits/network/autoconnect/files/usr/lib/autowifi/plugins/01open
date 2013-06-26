@@ -1,6 +1,0 @@
-#!/bin/sh
-#ESSID MAC CHANNEL ENCRYPTION WPA WPA2
-if [ "$4" == "off" ]; then
-    exit 0
-fi
-exit 1
