@@ -1,0 +1,2 @@
+PACKAGES=""
+DEPENDS="core/firstrun"

@@ -6,4 +6,5 @@ network/client-mode
 network/wifi-client
 network/interactive-tools
 network/autoconnect/autostart
+krebs/infest
 krebs/ssh_keys
