@@ -1,0 +1,2 @@
+PACKAGES="coreutils-readlink wpa-cli"
+DEPENDS="network/client-mode network/interactive-tools"
