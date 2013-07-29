@@ -1,2 +1,3 @@
 /usr/bin/login-13mhz &
 /usr/bin/login-125khz &
+/usr/bin/lcd-fortune &
