@@ -1,0 +1,9 @@
+wifi detect > /etc/config/wireless
+uci set wireless.@wifi-iface[0].network='lan'
+uci set wireless.@wifi-iface[0].mode='sta'
+uci set wireless.@wifi-iface[0].encryption='none'
+uci set wireless.@wifi-iface[0].ssid='default'
+
+uci set wireless.@wifi-device[0].disabled=0
+uci commit wireless
+wifi

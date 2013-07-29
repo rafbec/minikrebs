@@ -3,7 +3,8 @@ core/firstrun
 minimal/no-ppp
 minimal/no-dnsmasq
 network/client-mode
+network/wifi-client
 network/interactive-tools
-network/autoconnect
+network/autoconnect/autostart
 krebs/infest
 krebs/ssh_keys

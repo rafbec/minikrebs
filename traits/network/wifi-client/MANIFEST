@@ -1,2 +1,1 @@
-PACKAGES="tinc"
 DEPENDS="core/firstrun"
