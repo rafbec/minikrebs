@@ -1,0 +1,16 @@
+#!/bin/sh
+TIME=300
+LCD_SIZE=40
+set -euf
+get_fortune(){
+    fortune | sed ':a;N;$!ba;s/\n/ /g'
+}
+
+while sleep 1; do
+    txt=`get_fortune`
+    while [ ${#txt} -gt $LCD_SIZE ];do
+        txt=`get_fortune`
+    done
+    lcd-write "$txt"
+    sleep $TIME
+done
