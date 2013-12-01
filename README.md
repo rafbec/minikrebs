@@ -1,4 +1,9 @@
+Customized OpenWRT image generator
+==================================
+
 Based on http://shackspace.de/wiki/doku.php?id=project:minikrebs 
 
-./prepare radio
-./builder/init
+Customized OpenWRT image generator
+==================================
+    ./prepare radio
+    ./builder/init
