@@ -1,0 +1,12 @@
+#!/bin/sh
+ 
+#
+# Search for episodes on Metaebene and play the first result
+#
+ 
+wget -U "" "http://metaebene.me/updates/" -O /tmp/_html
+SNIP=$(grep -o -e "thumbnail.*" /tmp/_html | head -n 1)
+URL=$(echo $SNIP | cut -d '"' -f 3)
+wget -U "" "$URL" -O /tmp/_html
+MP3=$(grep -r "og:audio.*.mp3" /tmp/_html | head -n 1 | cut -d '"' -f 4)
+wget -U "" "$MP3" -O - | madplay -

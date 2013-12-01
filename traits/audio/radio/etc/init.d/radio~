@@ -1,0 +1,31 @@
+#!/bin/sh /etc/rc.common
+
+# This script should not have the same name
+# as the actual daemon it controls, otherwise
+# strange things happen when we use killall
+
+# Without the next line, we don't show up in the luci GUI
+START=94
+# CAUTION: Without the next line, rebooting/shutting down the system hangs
+# Run /etc/init.d/radio enable for this to take effect
+STOP=15
+
+start() {
+	NUMBER_OF_PIDS=$(pidof radioplayer | wc -w)
+        echo $NUMBER_OF_PIDS
+	if [ $NUMBER_OF_PIDS == 0 ] ; then
+		radioplayer >/dev/null 2>&1 &
+	fi
+}
+
+stop() {
+	# FIXME: Have the radioplayer script itself kill 
+	# all the helper processes insted of the extra stuff in the following line
+	killall -9 radioplayer aplay mplay arduinolisten 2>/dev/null
+}
+
+restart() {
+	stop
+	sleep 1
+	start
+}

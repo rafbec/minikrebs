@@ -1,0 +1,38 @@
+#!/bin/sh
+
+#
+# Tell the who the caller is
+# whenever the Fritz!Box receives a call
+# based on reverse lookup
+# TODO: Also use the Fritz!Box address book
+#
+
+FRITZBOX=192.168.178.30
+
+##############################
+
+nc $FRITZBOX 1012 | while read LINE; do
+  echo "Got: $LINE"
+  case $LINE in
+    *RING*)
+
+    RUFNR=$(echo $LINE | cut -d ";" -f 4)
+
+    FOUND=""
+    FOUND=$(wget -q -O - "http://www.dasoertliche.de/Controller?form_name=search_inv&ph=$RUFNR" | grep getItemData)
+    ORTSNETZ=""
+
+    if [ "" == "$FOUND" ] ; then
+      ORTSNETZ=$(wget -q -O - "http://www.teltarif.de/festnetz/vorwahl/orte.html?nach=$RUFNR&land=1" | grep -e "<\/B><\/TD>" | grep EEEEEE | head -n 1 | cut -d "<" -f 6 | cut -d ">" -f 2)
+      speak "Anruf aus $ORTSNETZ. - Ich wiederhole: Anruf aus $ORTSNETZ."
+    else
+      # PLZ=$(echo $FOUND | cut -d "'" -f 8)
+      ORT=$(echo $FOUND | cut -d "'" -f 10)
+      NAME$(echo $FOUND | cut -d "'" -f 12)
+      # STRASSE=$(echo $FOUND | cut -d "'" -f 14)
+      # HAUSNR=$(echo $FOUND | cut -d "'" -f 16)
+      speak "Anruf von $NAME aus $ORT. - Ich wiederhole: Anruf von $NAME aus $ORT."
+    fi
+    ;;
+  esac
+done 

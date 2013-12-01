@@ -1,0 +1,17 @@
+#!/bin/sh
+
+case "$PRODUCT" in
+  d8c*) // Only do this if the USB device in question is a C-Media USB audio device
+  case "$ACTION" in
+    add)
+      logger -t button-hotplug Device: $DEVICE / Product: $PRODUCT / Action: $ACTION
+      logger -t C-Media USB audio device detected, starting Radio
+      /etc/init.d/radio start
+      ;;
+    remove)
+      logger -t button-hotplug Device: $DEVICE / Product: $PRODUCT / Action: $ACTION
+      /etc/init.d/radio stop
+      ;;
+  esac	
+  ;;
+esac		

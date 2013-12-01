@@ -1,0 +1,67 @@
+#!/bin/sh
+# This assumes a sketch on the Arduino on ttyATH0 that outputs hashes like 7354AEB4
+ 
+stty -F /dev/ttyATH0 cs8 57600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isig -icanon -iexten -echo -echoe -echok -echoctl -echoke noflsh -ixon -crtscts
+ 
+SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
+LAST=0
+
+tune()
+{
+  # logger "Tune to $1"
+  # Determine what should be played next
+  if [ "$1" == "$LAST" ] ; then
+    return # Do nothing in this case, we are already tuned
+  fi
+  TUNE=$1
+  if [ "$TUNE" == "up" ] ; then
+    TUNE=$(($(uci get radio.next)+1))
+  fi
+  if [ "$TUNE" == "down" ] ; then
+    TUNE=$(($(uci get radio.next)-1))
+  fi
+  uci set radio.next=$TUNE
+  # Kill the currently running radio streams but not the radio script itself
+  killall -9 madplay wget 2>/dev/null
+  LAST=$TUNE
+}
+
+volume()
+{
+  if [ "$1" == "up" ] ; then
+    amixer set "$SPEAKER" 2dB+
+  fi
+  if [ "$1" == "down" ] ; then
+    amixer set "$SPEAKER" 2dB-
+  fi
+}
+
+while read LINE; do
+  LINE=$(echo $LINE | sed -e 's|\n||g' | sed -e 's|\r||g' | sed -e 's|\l||g' )
+  LENGTH=$(echo "$LINE" | wc -m)
+  if [ "$LENGTH" == "9" ] ; then
+    echo $LINE
+    THISTIME=$(date +"%s")
+    COMMAND=$(uci get radio.$LINE.command)
+    echo $COMMAND
+    REPEATABLE=$(uci get radio.$LINE.repeat)
+    echo $REPEATABLE
+    if [ "$LASTCOMMAND" == "$COMMAND" ] ; then
+      echo "REPEAT"
+      if [ "$REPEATABLE" == "1" ] ; then
+        eval $COMMAND
+      else
+        if [ $THISTIME -ge $((LASTTIME+2)) ] ; then # At least 2 seconds between repeats
+          eval $COMMAND
+        else
+          echo "REJECTED THIS REPEAT"
+        fi
+      fi
+    else
+      eval $COMMAND
+    fi
+  LASTCOMMAND=$COMMAND
+  LASTTIME=$THISTIME
+  fi
+
+done < /dev/ttyATH0

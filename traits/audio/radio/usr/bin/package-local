@@ -1,0 +1,51 @@
+#!/bin/sh
+
+#
+# This script will one day generate an installable OpenWRT package
+# from all locally changed files on the running OpenWRT system that are not 
+# known (keep) conf files. This is useful in rapid (scripting) development.
+# Currently it "just" creates 2 tar.gz files
+# 
+
+cd /overlay
+opkg list-changed-conffiles > /tmp/excludes
+find /lib/upgrade/keep.d -type f -exec cat {} \; | grep -v "#" >> /tmp/excludes
+tar cvz -X /tmp/excludes -f /tmp/overlay.tar.gz * 2>/dev/null
+tar cvz -T /tmp/excludes -f /tmp/overlay-excluded.tar.gz 2>/dev/null
+rm /tmp/excludes
+cd -
+ls -lh /tmp/overlay*tar.gz
+
+exit 0
+
+##################################################################################
+# Now create the ipkg (untested, probably buggy)
+# For this, "ar" would need to be installed (package binutils is relatively large)
+##################################################################################
+
+mkdir -p /tmp/_ipkg/CONTROL
+
+cat > /tmp/_ipkg/CONTROL/control <<\EOF
+Package: custom-scripts
+Version: 0.1
+Description: Custom scripts
+Architecture: all
+Section: extra
+Priority: optional
+Maintainer: user <user@host>
+Homepage: 
+Depends: busybox
+Source: Inside this file
+EOF
+
+cd /tmp/_ipkg/CONTROL
+tar cvz -f /tmp/_ipkg/control.tar.gz * 2>/dev/null
+cd -
+
+mv /tmp/overlay.tar.gz /tmp/_ipkg/data.tar.gz
+
+echo "2.0" > /tmp/_ipkg/debian-binary
+
+ar -r /tmp/custom-scripts.ipk ./debian-binary ./data.tar.gz ./control.tar.gz
+
+rm -rf /tmp/_ipkg

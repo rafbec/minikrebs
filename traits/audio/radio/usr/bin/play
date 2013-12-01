@@ -1,0 +1,4 @@
+#!/bin/sh
+
+wget -U "" "$1" -O - | \
+madplay --fade-in=0.1 -a +10 -o wave:- - | aplay -Dplug:dmix

@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e 
+
+if [ -z "$1" ] ; then
+  URL=http://arduinocodeinone.googlecode.com/svn-history/r2/trunk/Arduino/Blink/applet/Blink.hex
+else
+  URL="$1"
+fi
+
+wget -c "$URL" -O /tmp/_tmp.hex
+
+# Reset using "pin" R17-S (south end of resistor 17)
+echo 0 > /sys/class/gpio/gpio29/value # grounded
+sleep 1 # Is needed to make it reliable
+echo 1 > /sys/class/gpio/gpio29/value # isolated
+avrdude -v -p atmega328p -c arduino -P /dev/ttyATH0 -b 57600 -D -U flash:w:/tmp/_tmp.hex:i || echo "Is another process accessing the port?"
+
+rm /tmp/_tmp.hex

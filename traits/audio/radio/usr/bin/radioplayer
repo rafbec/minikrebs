@@ -1,0 +1,168 @@
+#!/bin/sh
+
+# This sets the exit status $? of a pipe to to the exit code of the 
+# last program to exit non-zero (or zero if all exited successfully)
+set -o pipefail
+
+# Initialize
+uci get radio.next || uci set radio.next=1
+
+nr_to_name()
+{
+  NUMBER_OF_STATIONS=$(uci show radio | grep -e "=station$" | wc -l)
+  if [ $1 -le $NUMBER_OF_STATIONS ] ; then
+    echo $(uci show radio | grep -e "=station$" | cut -d "." -f 2 | cut -d "=" -f 1 | head -n $1 | tail -n 1)
+  else
+    uci set radio.next=1 # Reset
+    echo $(uci show radio | grep -e "=station$" | cut -d "." -f 2 | cut -d "=" -f 1 | head -n 1 | tail -n 1) # 1st
+  fi
+}
+
+name_to_nr()
+{
+  STATIONS=$(uci show radio | grep -e "=station$")
+  i=0
+  for STATION in $STATIONS ; do
+    i=$((i+1))
+    STA=$(echo $STATION | cut -d "." -f 2 | cut -d "=" -f 1)
+    if [ "$STA" == "$1" ] ; then
+      echo $i
+    fi
+  done
+}
+
+
+# nr_to_name 3
+# name_to_nr $(nr_to_name 2)
+
+####################
+
+trap "killall -9 arduinolisten ; kill $$" SIGINT # also ctrl-D
+trap "killall -9 arduinolisten ; kill $$" EXIT # also killall?
+
+# Optionally, launch the Arduino handler that reacts to commands sent from the Arduino
+/usr/bin/arduinolisten &
+echo $! > /tmp/process_arduinolisten.pid
+
+SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
+amixer sset $SPEAKER '60%' || exit 1
+
+# Play station IDs and in parallel launch stream with an overlap
+
+play()
+{
+  SUCCEEDED=0
+  URL=$(echo $1 | sed -e 's|https://|http://|g' ) # e.g., Netzpolitik needs this
+  wget -U "" "$URL" -O - | madplay --fade-in=3 -o wave:- - | aplay -Dplug:dmix
+  if [ $? -eq 0 ]; then
+    SUCCEEDED=1
+  fi
+}
+
+overlay()
+{
+  wget -U "" "$1" -O - | madplay --fade-in=0.5 -o wave:- - | aplay -Dplug:dmix &
+}
+
+id()
+{
+   wget -U "" "http://translate.google.com/translate_tts?tl=$1&q=$2" -O - | madplay --fade-in=0.1 -o wave:- - | aplay -Dplug:dmix &
+}
+
+podcast()
+{
+  URL=$(wget -U "" "$1" -O - | grep "enclosure url.*mp3" | head -n 1 | grep -o -e "enclosure url.*\"" | cut -d '"' -f 2 | sed -e 's|https://|http://|g')
+  echo $URL
+  wget -U "" "$URL" -O - | madplay --fade-in=3 -o wave:- - | aplay -Dplug:dmix 
+  if [ $? -eq 0 ]; then
+    # Only store lasturl value if listened all the way until the end
+    # and thus got exitcode 0
+    uci set radio.$2.lasturl="$URL" && uci commit
+  fi
+}
+
+playlist()
+{
+  play $(wget -U "" "$1" -O - | grep http | head -n 1 | cut -d "=" -f 2)
+}
+
+dilandau()
+{
+  SEARCH=$(echo $1 | sed -e 's| |%20|g')
+  echo $SEARCH
+  wget -U "" "http://www.dilandau.eu/download-songs-mp3/$SEARCH/1.html" -O /tmp/_html
+  SNIP=$(grep -o -e "a\ download.*" /tmp/_html | head -n 1)
+  PART1=$(echo $SNIP | cut -d '"' -f 4)
+  PART2=$(echo $SNIP | cut -d '"' -f 6)
+  play $PART1$PART2
+}
+
+playonce()
+{
+  # Check if we have something scheduled to be played once
+  # if so, play it now
+  PLAYONCE=""
+  PLAYONCE=$(uci show radio | grep -e "=playonce$" | cut -d "." -f 2 | cut -d "=" -f 1 | head -n 1 | tail -n 1)
+  if [ "" != "$PLAYONCE" ] ; then
+    SUCCEEDED=0
+    TYPE=$(uci get radio.$PLAYONCE.type)
+    if [ "$TYPE" == "song" ] ; then
+      dilandau $(uci get radio.$PLAYONCE.title)
+    else
+      play $(uci get radio.$PLAYONCE.url)
+    fi
+    if [ "$SUCCEEDED" == "1" ] ; then
+      uci delete radio.$PLAYONCE
+      uci commit
+    fi
+  fi
+}
+
+play_next()
+{
+  # If we have playonce instances, play the first of them
+  playonce
+  # Find out what station number to play
+  NEXTNUM=$(uci get radio.next)
+  # Play station ID
+  STATION=$(nr_to_name $NEXTNUM)
+  SIDTYPE=$(uci get radio.$STATION.sidtype)
+  if [ "$SIDTYPE" == "jingle" ] ; then
+    overlay $(uci get radio.$STATION.sidurl)
+  else
+    id $(uci get radio.$STATION.lang) $(uci get radio.$STATION.speakname | sed -e 's|\ |+|g')
+  fi  
+  # Play station
+  TYPE=$(uci get radio.$STATION.type)
+  if [ "$TYPE" == "mp3" ] ; then
+    play $(uci get radio.$STATION.url)
+  elif [ "$TYPE" == "pls" ] ; then
+    playlist $(uci get radio.$STATION.url)
+  elif [ "$TYPE" == "rss" ] ; then
+    podcast $(uci get radio.$STATION.url) $STATION
+  else
+    echo type $TYPE to be handled
+  fi
+  NEXTNUMNOW=$(uci get radio.next)
+  if [ "$NEXTNUMNOW" == "$NEXTNUM" ] ; then
+    # If next has not been changed by an external script, then we increase it
+    echo "*** INCREASING ***"
+    uci set radio.next=$((NEXTNUM+1)) # Set but do not write to disk 
+  fi
+}
+
+# Wait until we have Internet
+while true; do
+  ping -c1 google.com && break
+  sleep 1
+done
+
+# Play startup sound
+play http://irmagic.carina.uberspace.de/radio/startup.mp3 && sleep 1
+
+# Infinite loop
+while true; do
+  play_next
+done
+
+

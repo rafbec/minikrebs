@@ -1,0 +1,8 @@
+#!/bin/sh
+# To handle short and long presses, see http://wiki.openwrt.org/doc/howto/hardware.button
+logger $BUTTON
+logger $ACTION
+if [ $BUTTON = reset -a $ACTION = pressed ]; then
+killall wget
+killall madplay
+fi
