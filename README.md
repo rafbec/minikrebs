@@ -3,7 +3,8 @@ Customized OpenWRT image generator
 
 Based on http://shackspace.de/wiki/doku.php?id=project:minikrebs 
 
-Customized OpenWRT image generator
-==================================
+Build image that contains a webradio client
+-------------------------------------------
+
     ./prepare radio
     ./builder/init
