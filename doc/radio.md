@@ -22,4 +22,3 @@ TODO
 ----
 
 * Get rid of the Arduino, use LIRC to receive and send IR codes, e.g., using lirc_rpi(?)
-* Make the buttons on the USB sound card useable, e.g., using usb-hid(?)
