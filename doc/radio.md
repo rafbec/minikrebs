@@ -17,3 +17,9 @@ If you have totally mis-configured the network and can't get in anymore, use "Op
 ### Setting up radio stations and remote control codes
 * http://192.168.0.19/cgi-bin/luci/admin/radio/stations
 * http://192.168.0.19/cgi-bin/luci/admin/radio/remote (this is for a 3.3V 16MHz Arduino to be hooked up to the router)
+
+TODO
+----
+
+* Get rid of the Arduino, use LIRC to receive and send IR codes, e.g., using lirc_rpi(?)
+* Make the buttons on the USB sound card useable, e.g., using usb-hid(?)
