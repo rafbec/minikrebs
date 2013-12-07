@@ -1,1 +1,1 @@
-PACKAGES="luci ser2net alsa-utils madplay luci-theme-bootstrap coreutils-stty nano kmod-usb-hid kmod-input-evdev triggerhappy"
+PACKAGES="luci ser2net alsa-utils madplay luci-theme-bootstrap coreutils-stty nano kmod-usb-hid kmod-input-evdev triggerhappy -luci-proto-ppp -luci-lib-ipkg avrdude"
