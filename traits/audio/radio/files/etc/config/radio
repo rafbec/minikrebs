@@ -1,4 +1,3 @@
-
 config station 'dlf_nachrichten'
 	option url 'http://www.dradio.de/rss/podcast/nachrichten/'
 	option type 'rss'
@@ -71,19 +70,7 @@ config station 'bitsundso'
 	option speakname 'bits und so'
 	option lasturl 'http://www.bitsundso.de/podpress_trac/feed/513/0/bits-2013-09-22.mp3'
 
-config station 'netzpolitik'
-	option lang 'de'
-	option type 'rss'
-	option url 'http://netzpolitik.org/category/netzpolitik-podcast/feed/'
-	option sidtype 'spoken'
-	option speakname 'Netzpolitik'
-	option lasturl 'http://netzpolitik.org/wp-upload/20130816-netzpolitischer-wochenrueckblick.mp3'
-
 config 3 'next'
-
-config station 'radio7'
-	option type 'mp3'
-	option sidtype 'jingle'
 
 config rcc '3F90319C'
 	option type '1'
