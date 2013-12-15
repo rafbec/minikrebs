@@ -218,13 +218,6 @@ config station 'livepodcasts'
 	option sidtype 'spoken'
 	option speakname 'Live Podcast'
 
-config station 'brainmeats'
-	option type 'rss'
-	option url 'http://brainmeats.net/rss.xml'
-	option sidtype 'spoken'
-	option lang 'en_US'
-	option speakname 'brainmeats'
-
 config rcc 'D0529225'
 	option repeat '0'
 	option command 'tune up'
@@ -232,4 +225,19 @@ config rcc 'D0529225'
 config rcc '85E09D61'
 	option repeat '0'
 	option command 'tune down'
+
+config rcc '2F1EC521'
+	option repeat '0'
+	option command 'kill -SIGCONT $(pidof madplay)'
+
+config rcc '7510F4BD'
+	option repeat '0'
+	option command 'kill -SIGSTOP $(pidof madplay)'
+	
+config station 'chistmasradiofm'
+	option type 'pls'
+	option url 'http://www.christmasradio.fm/11/christmasradio.fm.m3u'
+	option sidtype 'spoken'
+	option lang 'en_US'
+	option speakname 'Christmas radio FM'
 
