@@ -7,9 +7,10 @@ echo 50 > delay_on
 echo 1950 > delay_off
 cd -
 
-# Without this, I get problems on Unitymedia
-echo "nameserver 8.8.8.8" > /etc/resolv.conf
-# /etc/init.d/dnsmasq stop (gone)
+# Without this, I get problems on Unitymedia:
+# In /etc/config/network
+# option dns '8.8.8.8 8.8.4.4'
+# for each network listed there
 
 # fritzlisten &
 
