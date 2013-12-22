@@ -2,6 +2,11 @@
 -- there must be a uci file created with "touch /etc/config/radio"
 m = Map("radio", "Personal Audio")
 
+-- Kill madplay when apply is clicked, so that we move to playonce track if we have one set
+m.on_after_commit = function(self)
+    luci.util.exec("killall madplay")
+end
+
 s = m:section(TypedSection, "playonce", "Play once")
 s.template  = "cbi/tblsection"
 
