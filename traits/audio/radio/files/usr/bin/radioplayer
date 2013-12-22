@@ -37,12 +37,13 @@ name_to_nr()
 
 ####################
 
-trap "killall -9 arduinolisten ; kill $$" SIGINT # also ctrl-D
-trap "killall -9 arduinolisten ; kill $$" EXIT # also killall?
+# We are not killing arduinolisten so that it can actually be used to restart the radio service
+# trap "killall -9 arduinolisten ; kill $$" SIGINT # also ctrl-D
+# trap "killall -9 arduinolisten ; kill $$" EXIT # also killall?
 
-# Optionally, launch the Arduino handler that reacts to commands sent from the Arduino
-/usr/bin/arduinolisten &
-echo $! > /tmp/process_arduinolisten.pid
+# Optionally, launch the Arduino handler that reacts to commands sent from the Arduino - moved to init script
+# /usr/bin/arduinolisten &
+# echo $! > /tmp/process_arduinolisten.pid
 
 SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
 amixer sset $SPEAKER '60%' || exit 1
