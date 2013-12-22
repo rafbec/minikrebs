@@ -241,3 +241,54 @@ config station 'chistmasradiofm'
 	option lang 'en_US'
 	option speakname 'Christmas radio FM'
 
+config rcc '2F1EC521'
+	option repeat '0'
+	option command 'kill -SIGCONT $(pidof madplay)'
+
+config rcc '7510F4BD'
+	option repeat '0'
+	option command 'kill -SIGSTOP $(pidof madplay)'
+
+config rcc 'BEE404D5'
+	option repeat '0'
+	option command 'tune up'
+
+config rcc 'AC54EF11'
+	option repeat '0'
+	option command 'tune up'
+
+config rcc '694886D3'
+	option repeat '0'
+	option command 'tune down'
+
+config rcc '36D2A697'
+	option repeat '0'
+	option command 'tune down'
+
+config rcc 'E1E7EB75'
+	option repeat '0'
+	option command 'kill -SIGSTOP $(pidof madplay)'
+
+config rcc 'A059DA7B'
+	option repeat '0'
+	option command 'kill -SIGCONT $(pidof madplay)'
+
+config rcc 'A0C72255'
+	option repeat '1'
+	option command 'volume down'
+
+config rcc 'D33D0291'
+	option repeat '0'
+	option command 'volume up'
+
+config rcc '756247D3'
+	option repeat '0'
+	option command 'pumpon'
+
+config rcc '700FD6BB'
+	option repeat '0'
+	option command 'echo 0 > /sys/class/gpio/gpio8/value'
+
+config rcc 'BB17FD37'
+	option repeat '0'
+	option command 'echo 1 > /sys/class/gpio/gpio8/value'
