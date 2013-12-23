@@ -1,0 +1,31 @@
+#!/bin/sh
+
+#
+# It is not necessary to use lua/luci for very simple web interfaces
+# See http://wiki.openwrt.org/doc/howto/http.httpd
+#
+
+echo "Content-type: text/html"
+echo ""
+echo "<html>"
+echo "<body>"
+echo "<h1>Radio</h1>"
+echo "<p>This is a tiny shell script running on the server</p>"
+echo "<a href='?next'>Next</a> | <a href='?pause'>Pause</a> | <a href='?continue'>Continue</a>"  
+# echo "<pre>"
+# env
+# echo "</pre>"
+echo "</body>"
+echo "</html>"
+
+if [ "$QUERY_STRING" == "next" ] ; then
+  killall madplay
+fi
+
+if [ "$QUERY_STRING" == "pause" ] ; then
+  kill -SIGSTOP $(pidof madplay)
+fi
+
+if [ "$QUERY_STRING" == "continue" ] ; then
+  kill -SIGCONT $(pidof madplay)
+fi
