@@ -3,6 +3,7 @@
 logger $BUTTON
 logger $ACTION
 if [ $BUTTON = reset -a $ACTION = pressed ]; then
-killall wget
-killall madplay
+  TUNE=$(($(uci get radio.next)+1))
+  uci set radio.next=$TUNE
+  killall madplay
 fi

@@ -144,12 +144,12 @@ play_next()
   else
     echo type $TYPE to be handled
   fi
-  NEXTNUMNOW=$(uci get radio.next)
-  if [ "$NEXTNUMNOW" == "$NEXTNUM" ] ; then
-    # If next has not been changed by an external script, then we increase it
-    echo "*** INCREASING ***"
-    uci set radio.next=$((NEXTNUM+1)) # Set but do not write to disk 
-  fi
+  #NEXTNUMNOW=$(uci get radio.next)
+  #if [ "$NEXTNUMNOW" == "$NEXTNUM" ] ; then
+  #  # If next has not been changed by an external script, then we increase it
+  #  echo "*** INCREASING ***"
+  #  uci set radio.next=$((NEXTNUM+1)) # Set but do not write to disk 
+  #fi
 }
 
 # Wait until we have Internet
