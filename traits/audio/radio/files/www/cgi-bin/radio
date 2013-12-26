@@ -5,20 +5,190 @@
 # See http://wiki.openwrt.org/doc/howto/http.httpd
 #
 
+# Always need to send this header
 echo "Content-type: text/html"
 echo ""
-echo "<html>"
-echo "<body>"
-echo "<h1>Radio</h1>"
-echo "<p>This is a tiny shell script running on the server</p>"
-echo "<a href='?next'>Next</a> | <a href='?pause'>Pause</a> | <a href='?continue'>Continue</a>"  
+
+echo "<html>
+<head>"
+
+# Bootstrap from CDN
+echo '
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+'
+
+# jQuery and Bootstrap from CDN
+echo '
+<script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+'
+
+# Make cross-origin requests to any domain; https://github.com/TOMODOcom/TOMODOkorz - does not work for me
+# echo '<script src="//tomodo-tools.s3.amazonaws.com/tomodo.korz-0.5.js"></script>'
+
+# For centering (CSS) 
+echo '
+<style>
+html, body{height:100%;margin:0;padding:0 0} 
+.container-fluid{height:100%;display:table;width:100%;padding-right:0;padding-left: 0}   
+.row-fluid{height:100%;display:table-cell;vertical-align:middle;width:100%}
+.centering{float:none;margin:0 auto} 
+</style>
+
+'
+
+echo '</head>
+<body>
+<div class="container theme-showcase">'
+
+# For centering (begin)
+echo '
+<div class="container-fluid">
+     <div class="row-fluid">
+     <div class="offset3 span6 centering">'
+
+echo "<center><h1>$(uci get system.@system[0].hostname) &infin;</h1></center>"
+
+echo '<div style="line-height: 350%; text-align: justify">'
+
+# A search field
+echo '
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8 col-sm-offset-2">
+      <form class="form-search">
+          <div class="input-group">
+              <input type="text" class="form-control" name="song" placeholder="Enter song name or mp3 URL">
+              <span class="input-group-btn">
+                  <button type="submit" class="btn btn-primary">&nbsp;<i class="fa fa-play"></i>&nbsp;</button>
+              </span>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+'
+
+# Some buttons
+echo "
+<center>
+<div class=\"btn-group\">
+<a href=\"?next\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-step-forward\"></i> Next</a>
+<a href=\"?pause\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-pause\"></i> Pause</a>
+<a href=\"?continue\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-play\"></i> Continue</a>  
+<a href=\"?mute\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-times-circle-o\"></i> Mute</a>
+<a href=\"?unmute\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-times-circle-o\"></i> Unmute</a>
+</div>
+</center>
+<p></p>
+"
+
+# One button per station
+STATIONS=$(uci show radio | grep "=station" | cut -d "=" -f 1 | cut -d "." -f 2)
+COUNTER=0
+for STATION in $STATIONS
+do
+  let COUNTER=COUNTER+1 
+  echo " <a href=\"?station="$COUNTER"\" class=\"btn\" role=\"button\">"$STATION"</a>"
+done
+
+echo '</div>'
+
+
+# Some debug output
 # echo "<pre>"
 # env
 # echo "</pre>"
+
+
+# Now for some favorite songs (TODO: Move to some editable settings)
+echo "<center>"
+for SONG in "sunchyme" "orinoco flow" "toto africa" "sunchyme" "wedding rain liz story" \
+"janelle monae we are young" "melanie thornton wonderful dream" \
+"reamonn moments like this" "petersburg sleigh ride" "rafferty baker street" \
+"bolero ravel" "Tamee Harrison" ; do
+  echo '<a href="?song='$SONG'">'$SONG'</a> | '
+done
+echo "</center>"
+
+
+# For centering (end)
+echo '
+         </div>
+    </div>
+ </div>
+'
+
 echo "</body>"
 echo "</html>"
 
+# Here we do the actual work
+
+STRING=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 1)
+
+if [ "$STRING" == "play" ] ; then
+  URL=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
+  # If the URL is a m3u, try to get the first mp3 line
+  ENDING=$(echo $URL| awk '{ print substr($0, length($0)-3, length($0))}')
+  if [ "$ENDING" == ".m3u" ] ; then
+    URL=$(wget "$URL" -U "" -O - -q | grep http | cut -d "=" -f 2)
+  fi
+  # The following does not work yet since set radio.ONCE.url errors out
+  # echo $URL
+  # uci delete radio.ONCE
+  # uci set radio.ONCE=playonce
+  # uci set radio.ONCE.url=$URL 2>&1
+  # uci set radio.ONCE.type=mp3
+  # killall madplay
+fi
+
+if [ "$STRING" == "song" ] ; then
+  SONG=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
+  ENDING=$(echo $SONG| awk '{ print substr($0, length($0)-3, length($0))}')
+  if [ "$ENDING" == ".mp3" ] ; then
+    uci delete radio.ONCE
+    uci set radio.ONCE=playonce
+    # We urldecode the song, since it is an URL which otherwise does not play
+    SONG=$(printf $(echo "$SONG" | sed -e '1! d' -e 's/%/\\x/g'))
+    uci set radio.ONCE.url="$SONG"
+    uci set radio.ONCE.type=mp3
+  else
+    # We leave the song urlencoded, since it is input that way into a seach engine
+    uci delete radio.ONCE
+    uci set radio.ONCE=playonce
+    uci set radio.ONCE.title="$SONG" # This is DANGEROUS, what if some random rubbish is passed in?
+    uci set radio.ONCE.type=song
+  fi
+  killall madplay
+fi
+
+if [ "$STRING" == "station" ] ; then
+  NEXT=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
+  uci set radio.next=$NEXT # This is DANGEROUS, what if some random rubbish is passed in?
+  echo $NEXT
+  killall madplay
+fi
+
+if [ "$STRING" == "volume" ] ; then
+  SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)  
+  VOLUME=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
+  amixer sset $SPEAKER $VOLUME% # This is DANGEROUS, what if some random rubbish is passed in?
+fi
+
+if [ "$QUERY_STRING" == "mute" ] ; then
+  SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)  
+  amixer sset $SPEAKER '3%'
+fi
+
+if [ "$QUERY_STRING" == "unmute" ] ; then
+  SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
+  amixer sset $SPEAKER '60%'
+fi       
+
 if [ "$QUERY_STRING" == "next" ] ; then
+  uci set radio.next=$(($(uci get radio.next)+1))
   killall madplay
 fi
 
@@ -29,3 +199,4 @@ fi
 if [ "$QUERY_STRING" == "continue" ] ; then
   kill -SIGCONT $(pidof madplay)
 fi
+

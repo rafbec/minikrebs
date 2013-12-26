@@ -37,11 +37,12 @@ name_to_nr()
 
 ####################
 
-# We are not killing arduinolisten so that it can actually be used to restart the radio service
+# Let the /etc/init.d script handle this, so that we can restart
+# the radioplayer using arduinolisten
 # trap "killall -9 arduinolisten ; kill $$" SIGINT # also ctrl-D
 # trap "killall -9 arduinolisten ; kill $$" EXIT # also killall?
-
-# Optionally, launch the Arduino handler that reacts to commands sent from the Arduino - moved to init script
+#
+# Optionally, launch the Arduino handler that reacts to commands sent from the Arduino
 # /usr/bin/arduinolisten &
 # echo $! > /tmp/process_arduinolisten.pid
 
@@ -52,12 +53,19 @@ amixer sset $SPEAKER '60%' || exit 1
 
 play()
 {
-  SUCCEEDED=0
+  # SUCCEEDED=0
   URL=$(echo $1 | sed -e 's|https://|http://|g' ) # e.g., Netzpolitik needs this
-  wget -U "" "$URL" -O - | madplay --fade-in=3 -o wave:- - | aplay -Dplug:dmix
-  if [ $? -eq 0 ]; then
-    SUCCEEDED=1
+
+  # If the URL is a m3u, try to get the first mp3 line
+  ENDING=$(echo $URL| awk '{ print substr($0, length($0)-3, length($0))}')
+  if [ "$ENDING" == ".m3u" ] ; then
+    URL=$(wget "$URL"  -O - -q | grep mp3 | cut -d "=" -f 2)
   fi
+
+  wget -U "" "$URL" -O - | madplay --fade-in=3 -o wave:- - | aplay -Dplug:dmix
+  # if [ $? -eq 0 ]; then
+  #   SUCCEEDED=1
+  # fi
 }
 
 overlay()
@@ -105,17 +113,19 @@ playonce()
   PLAYONCE=""
   PLAYONCE=$(uci show radio | grep -e "=playonce$" | cut -d "." -f 2 | cut -d "=" -f 1 | head -n 1 | tail -n 1)
   if [ "" != "$PLAYONCE" ] ; then
-    SUCCEEDED=0
+    # SUCCEEDED=0
     TYPE=$(uci get radio.$PLAYONCE.type)
     if [ "$TYPE" == "song" ] ; then
-      dilandau $(uci get radio.$PLAYONCE.title)
+      dilandau "$(uci get radio.$PLAYONCE.title)"
     else
       play $(uci get radio.$PLAYONCE.url)
     fi
-    if [ "$SUCCEEDED" == "1" ] ; then
-      uci delete radio.$PLAYONCE
-      uci commit
-    fi
+    # if [ "$SUCCEEDED" == "1" ] ; then
+    uci delete radio.$PLAYONCE
+    continue # exit the current for loop # TODO: APPARENTLY THIS DOES NOT WORK FROM INSIDE A FUNCTION ###################
+    # THIS IS WHY WE CANNOT PLAY TWO PLAYONCE INSTANCES AT ONCE. WE NEED TO DO AN IF PLAYONCE THEN PLAYONCE ELSE PLAY NORMAL
+    # uci commit
+    # fi
   fi
 }
 
@@ -123,6 +133,7 @@ play_next()
 {
   # If we have playonce instances, play the first of them
   playonce
+
   # Find out what station number to play
   NEXTNUM=$(uci get radio.next)
   # Play station ID
@@ -144,12 +155,12 @@ play_next()
   else
     echo type $TYPE to be handled
   fi
-  #NEXTNUMNOW=$(uci get radio.next)
-  #if [ "$NEXTNUMNOW" == "$NEXTNUM" ] ; then
-  #  # If next has not been changed by an external script, then we increase it
-  #  echo "*** INCREASING ***"
-  #  uci set radio.next=$((NEXTNUM+1)) # Set but do not write to disk 
-  #fi
+#  NEXTNUMNOW=$(uci get radio.next)
+#  if [ "$NEXTNUMNOW" == "$NEXTNUM" ] ; then
+#    # If next has not been changed by an external script, then we increase it
+#    echo "*** INCREASING ***"
+#    uci set radio.next=$((NEXTNUM+1)) # Set but do not write to disk 
+#  fi
 }
 
 # Wait until we have Internet
@@ -159,11 +170,10 @@ while true; do
 done
 
 # Play startup sound
-play http://irmagic.carina.uberspace.de/radio/startup.mp3 && sleep 1
+play http://irmagic.carina.uberspace.de/radio/startup.mp3
 
 # Infinite loop
 while true; do
   play_next
 done
-
 
