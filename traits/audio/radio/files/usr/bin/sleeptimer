@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# Find all PIDs of processes with the same name as myself
+PIDS=$(echo $(pidof $(basename $0)))
+echo $PIDS
+
+# Find my PID
+MYPID=$(echo $PIDS | cut -d " " -f 2)
+echo $MYPID
+
+# Kill all PIDs of processes with the name name that are not myself
+for PID in $PIDS ; do
+  if [ "$PID" != "$MYPID" ] ; then
+    echo kill $PID
+    kill -9 $PID >/dev/null 2>&1
+  fi
+done
+
+# Not clean
+killall sleep
+
+# Calculate seconds
+MINS=$(uci get radio.sleeptimer || echo 0)
+if [ $MINS -gt 100 ] ; then
+   MINS=0
+fi
+NEWMINS=$(($MINS+15))
+uci set radio.sleeptimer=$NEWMINS
+NEWSECS=$(($NEWMINS*60)) 
+speak "Schaltee ab in $NEWMINS Minuten"
+
+# Sleep for certain time, then switch USB power off
+# (if we have set up everything correctly, this stops playback
+# and sends shutdown IR signal to external devices)
+sleep $NEWSECS ; echo 0 > /sys/class/gpio/gpio8/value
+

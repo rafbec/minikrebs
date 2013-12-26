@@ -51,8 +51,6 @@ echo '
 
 echo "<center><h1>$(uci get system.@system[0].hostname) &infin;</h1></center>"
 
-echo '<div style="line-height: 350%; text-align: justify">'
-
 # A search field
 echo '
 <div class="container">
@@ -72,30 +70,33 @@ echo '
 '
 
 # Some buttons
-echo "
+echo '
 <center>
-<div class=\"btn-group\">
-<a href=\"?next\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-step-forward\"></i> Next</a>
-<a href=\"?pause\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-pause\"></i> Pause</a>
-<a href=\"?continue\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-play\"></i> Continue</a>  
-<a href=\"?mute\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-times-circle-o\"></i> Mute</a>
-<a href=\"?unmute\" class=\"btn btn-default btn-sm\" role=\"button\"><i class=\"fa fa-times-circle-o\"></i> Unmute</a>
+<div class="btn-group">
+<a href="?next" class="btn btn-default btn-sm" role="button"><i class="fa fa-step-forward"></i> Next</a>
+<a href="?pause" class="btn btn-default btn-sm" role="button"><i class="fa fa-pause"></i> Pause</a>
+<a href="?continue" class="btn btn-default btn-sm" role="button"><i class="fa fa-play"></i> Continue</a>  
+<a href="?mute" class="btn btn-default btn-sm" role="button"><i class="fa fa-volume-off"></i> Mute</a>
+<a href="?unmute" class="btn btn-default btn-sm" role="button"><i class="fa fa-bullhorn"></i> Unmute</a>
+<a href="?voldown" class="btn btn-default btn-sm" role="button">&nbsp;<i class="fa fa-volume-down"></i>&nbsp;</a>
+<a href="?volup" class="btn btn-default btn-sm" role="button">&nbsp;<i class="fa fa-volume-up"></i>&nbsp;</a>
 </div>
 </center>
 <p></p>
-"
+'
+
+echo '</div>'
 
 # One button per station
+echo '<center>'
 STATIONS=$(uci show radio | grep "=station" | cut -d "=" -f 1 | cut -d "." -f 2)
 COUNTER=0
 for STATION in $STATIONS
 do
   let COUNTER=COUNTER+1 
-  echo " <a href=\"?station="$COUNTER"\" class=\"btn\" role=\"button\">"$STATION"</a>"
+  echo " <a href=\"?station="$COUNTER"\">"$STATION"</a> |"
 done
-
-echo '</div>'
-
+echo '</center>'
 
 # Some debug output
 # echo "<pre>"
@@ -111,6 +112,10 @@ for SONG in "sunchyme" "orinoco flow" "toto africa" "sunchyme" "wedding rain liz
 "bolero ravel" "Tamee Harrison" ; do
   echo '<a href="?song='$SONG'">'$SONG'</a> | '
 done
+
+echo '<p></p>'
+echo '<p><a class="btn btn-default btn-sm" role="button" href="/cgi-bin/luci/">Settings</a></p>'
+echo '<p><a href="https://github.com/probonopd/" target="_blank"><i class="fa fa-github"></i> Fork me on Github</a></p>'
 echo "</center>"
 
 
@@ -176,6 +181,16 @@ if [ "$STRING" == "volume" ] ; then
   VOLUME=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
   amixer sset $SPEAKER $VOLUME% # This is DANGEROUS, what if some random rubbish is passed in?
 fi
+
+if [ "$STRING" == "voldown" ] ; then
+  SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
+  amixer set $SPEAKER 7dB-
+fi
+
+if [ "$STRING" == "volup" ] ; then
+  SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
+  amixer set $SPEAKER 7dB+
+fi   
 
 if [ "$QUERY_STRING" == "mute" ] ; then
   SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)  
