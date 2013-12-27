@@ -48,7 +48,7 @@ _ssh._tcp. local
 $HOSTNAME Web Interface
 _http._tcp local
 80
-path=/cgi-bin/luci/admin/radio/stations
+path=/cgi-bin/radio
 EOxF
 ./usr/bin/mDNSResponder  -f ./etc/mDNSResponder.conf &
 cd -
