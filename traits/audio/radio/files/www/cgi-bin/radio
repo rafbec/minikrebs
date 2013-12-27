@@ -36,7 +36,13 @@ html, body{height:100%;margin:0;padding:0 0}
 .row-fluid{height:100%;display:table-cell;vertical-align:middle;width:100%}
 .centering{float:none;margin:0 auto} 
 </style>
+'
 
+# Some custom CSS
+echo '
+<style>
+.station-icon{max-width:100px; max-height:100px; min-width:100px;}
+</style>
 '
 
 echo '</head>
@@ -61,6 +67,14 @@ echo '
               <input type="text" class="form-control" name="song" placeholder="Enter song name or mp3 URL">
               <span class="input-group-btn">
                   <button type="submit" class="btn btn-primary">&nbsp;<i class="fa fa-play"></i>&nbsp;</button>
+              </span>
+          </div>
+      </form>
+      <form class="form-search">
+          <div class="input-group">
+              <input type="text" class="form-control" name="q" placeholder="Enter station or podcast name">
+              <span class="input-group-btn">
+                  <button type="submit" class="btn btn-default">&nbsp;<i class="fa fa-play"></i>&nbsp;</button>
               </span>
           </div>
       </form>
@@ -89,6 +103,7 @@ echo '</div>'
 
 # One button per station
 echo '<center>'
+echo '<a href="?browse=">Regional</a> | '
 STATIONS=$(uci show radio | grep "=station" | cut -d "=" -f 1 | cut -d "." -f 2)
 COUNTER=0
 for STATION in $STATIONS
@@ -106,7 +121,7 @@ echo '</center>'
 
 # Now for some favorite songs (TODO: Move to some editable settings)
 echo "<center>"
-for SONG in "sunchyme" "orinoco flow" "toto africa" "sunchyme" "wedding rain liz story" \
+for SONG in "sunchyme" "orinoco flow" "toto africa" "wedding rain liz story" \
 "janelle monae we are young" "melanie thornton wonderful dream" \
 "reamonn moments like this" "petersburg sleigh ride" "rafferty baker street" \
 "bolero ravel" "Tamee Harrison" ; do
@@ -132,6 +147,88 @@ echo "</html>"
 # Here we do the actual work
 
 STRING=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 1)
+
+#
+# RadioTime API is documented on 
+# https://github.com/brianhornsby/plugin.audio.tuneinradio/wiki/RadioTime-API-Methods
+# Appending "&render=json" would give JSON instead
+# which might be useful for client-side processing
+#
+
+# Given a radiotime.com station ID, play the stream
+if [ "$STRING" == "radiotime" ] ; then
+  ID=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
+  URL="http://opml.radiotime.com/Tune.ashx?id=$ID&formats=mp3"
+  # echo $URL
+  STREAM=$(wget "$URL" -U "" -O - -q | grep "http" | head -n 1)
+  echo $STREAM
+  # If the STREAM URL is a m3u, try to get the first http line
+  ENDING=$(echo $STREAM| awk '{ print substr($0, length($0)-3, length($0))}')
+  if [ "$ENDING" == ".m3u" ] ; then
+    STREAM=$(wget "$STREAM" -U "" -O - -q | grep http | cut -d "=" -f 2 | head -n 1)
+    echo $STREAM
+  fi
+  # If the STREAM URL is a pls, try to get the first http line
+  ENDING=$(echo $STREAM| awk '{ print substr($0, length($0)-3, length($0))}')
+  if [ "$ENDING" == ".pls" ] ; then         
+    STREAM=$(wget "$STREAM" -U "" -O - -q | grep http | cut -d "=" -f 2 | head -n 1)  
+    echo $STREAM
+  fi
+  uci delete radio.ONCE
+  uci set radio.ONCE=playonce
+  uci set radio.ONCE.url="$STREAM"
+  uci set radio.ONCE.type=mp3
+  killall madplay
+fi
+
+# Search radiotime.com
+if [ "$STRING" == "q" ] ; then
+  Q=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
+  REQUEST_URI="?browse=http://opml.radiotime.com/Search.ashx?name=$Q&formats=mp3"
+  STRING="browse"
+fi
+
+# Browse radiotime.com podcast for episodes
+if [ "$STRING" == "pbrowse" ] ; then
+  ID=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
+  REQUEST_URI="?browse=http://opml.radiotime.com/Tune.ashx?c=pbrowse&id=$ID&flatten=true&formats=mp3"
+  STRING="browse"
+fi
+
+# Show radiotime.com stations or podcasts based on a query, or just the local ones
+if [ "$STRING" == "browse" ] ; then
+  URL1=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
+  URL2=$(echo $REQUEST_URI | cut -d "?" -f 3)
+  URL="$URL1?$URL2"
+  # echo $URL
+  if [ "$URL" == "?" ] ; then
+    URL="http://opml.radiotime.com/Browse.ashx?c=local&formats=mp3"
+    if [ ! -e /tmp/local.xml ] ; then
+      echo "Downloading..."
+      wget "$URL" -U "" -O - -q  > /tmp/local.xml
+    fi
+    OPML=$(cat /tmp/local.xml)
+  else
+    OPML=$(wget "$URL" -U "" -O - -q)
+  fi
+  # echo $OPML
+  # I am replacing blanks with + so that sh word handing does not get confused
+  OUTLINES=$(echo "$OPML" | sed -e "s/ /+/g" | grep -o -e '<outline.*/>')
+  # echo $OUTLINES
+  for OUTLINE in $OUTLINES; do
+    ITEM=$(echo "$OUTLINE" | sed -e "s/+/ /g")
+    URL=$(echo "$ITEM" | cut -d '"' -f 6 | cut -d "=" -f 2) ### This is not very clean; TODO: clean URL based on s/p/t type
+    ID=$(echo "$ITEM" | grep -o "guide_id=.*\<" | cut -d '"' -f 2)
+    TYPE=$(echo $ID | head -c 1) # s = station, p = podcast, t = episode
+    NAME=$(echo "$ITEM" | cut -d '"' -f 4)
+    ICON=$(echo "$ITEM" | grep -o "image=.*\<" | cut -d '"' -f 2)
+    if [ "$TYPE" == "p" ] ; then
+      echo '<br><a href="?pbrowse='$ID'"><img class="station-icon" src="'$ICON'"> '$NAME'</a>'     
+    else
+      echo '<br><a href="?radiotime='$URL'&name='$NAME'"><img class="station-icon" src="'$ICON'"> '$NAME'</a>'
+    fi
+  done
+fi
 
 if [ "$STRING" == "play" ] ; then
   URL=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
@@ -184,17 +281,17 @@ fi
 
 if [ "$STRING" == "voldown" ] ; then
   SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
-  amixer set $SPEAKER 7dB-
+  amixer set $SPEAKER 5dB-
 fi
 
 if [ "$STRING" == "volup" ] ; then
   SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
-  amixer set $SPEAKER 7dB+
+  amixer set $SPEAKER 5dB+
 fi   
 
 if [ "$QUERY_STRING" == "mute" ] ; then
   SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)  
-  amixer sset $SPEAKER '3%'
+  amixer sset $SPEAKER '1%'
 fi
 
 if [ "$QUERY_STRING" == "unmute" ] ; then
@@ -214,4 +311,3 @@ fi
 if [ "$QUERY_STRING" == "continue" ] ; then
   kill -SIGCONT $(pidof madplay)
 fi
-
