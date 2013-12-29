@@ -54,7 +54,7 @@ config station 'SWR3'
 	option sidtype 'jingle'
 	option sidurl 'http://irmagic.carina.uberspace.de/radio/swr3.mp3'
 
-config station 'mobilemacs'
+config station 'freakshow'
 	option sidtype 'spoken'
 	option lang 'en_US'
 	option type 'rss'
