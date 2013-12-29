@@ -1,1 +1,2 @@
-PACKAGES="luci ser2net alsa-utils madplay luci-theme-bootstrap coreutils-stty nano kmod-usb-hid kmod-input-evdev triggerhappy -luci-proto-ppp -luci-lib-ipkg"
+PACKAGES="luci-mod-admin-full uhttpd libiwinfo-lua luci-theme-bootstrap -kmod-ipv6 -6relayd -ip6tables -odhcp6c ser2net alsa-utils madplay coreutils-stty nano kmod-usb-hid kmod-input-evdev triggerhappy -kmod-ppoe -kmod-pppox -dnsmasq -firewall"
+#  -luci-proto-ppp -luci-lib-ipkg -luci-app-firewall -kmod-ppoe -kmod-pppox -dnsmasq -luci-proto-ppp -firewall"

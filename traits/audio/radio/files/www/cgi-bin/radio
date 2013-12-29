@@ -47,7 +47,22 @@ echo '
 
 echo '</head>
 <body>
-<div class="container theme-showcase">'
+'
+
+# Display an error if USB sound card is not connected
+SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
+if [ "$SPEAKER" == "" ] ; then
+  echo '
+<div class="alert alert-error">
+    <a href="#" class="close" data-dismiss="alert">&times;</a>
+    <strong>Error!</strong> No USB sound device found. Please connect a compatible USB sound device.
+</div>
+</body>             
+</html>
+'
+fi
+
+echo '<div class="container theme-showcase">'
 
 # For centering (begin)
 echo '
