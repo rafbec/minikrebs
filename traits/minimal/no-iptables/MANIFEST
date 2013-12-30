@@ -1,0 +1,1 @@
+PACKAGES="-kmod-ipt-nat -kmod-ipt-nathelper -kmod-ipt-conntrack -iptables"

@@ -1,1 +1,1 @@
-# PACKAGES="luci-mod-admin-full uhttpd libiwinfo-lua luci-theme-bootstrap -kmod-ipt-nat -kmod-ipt-nathelper -kmod-ipt-conntrack -iptables -kmod-ipv6 -6relayd -ip6tables -odhcp6c ser2net alsa-utils madplay coreutils-stty nano kmod-usb-hid kmod-input-evdev triggerhappy -kmod-ppoe -kmod-pppox -dnsmasq -firewall"
+PACKAGES="luci-mod-admin-full uhttpd libiwinfo-lua luci-theme-bootstrap ser2net alsa-utils madplay coreutils-stty nano kmod-usb-hid kmod-input-evdev triggerhappy"

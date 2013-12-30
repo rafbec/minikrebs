@@ -1,0 +1,1 @@
+PACKAGES="-kmod-ipv6 -6relayd -ip6tables -odhcp6c"
