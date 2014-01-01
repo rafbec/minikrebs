@@ -16,4 +16,4 @@ PART2=$(echo $SNIP | cut -d '"' -f 6)
  
 URL=$PART1$PART2
  
-wget -U "" "$URL" -O - | madplay  -o wave:- - | aplay -Dplug:dmix
+wget -U "" "$URL" -O - | madplay  -o wave:- - 2>/tmp/madplay.out | aplay -Dplug:dmix
