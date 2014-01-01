@@ -172,6 +172,9 @@ done
 # Play startup sound
 play http://irmagic.carina.uberspace.de/radio/startup.mp3
 
+# Speak own IP address
+# speak "$(ifconfig  | grep "inet addr" | head -n 1 | cut -d ":" -f 2 | cut -d " " -f 1 | sed 's/\(.\)/\1 /g' | sed 's/\./,, punkt ,,/g')"
+
 # Infinite loop
 while true; do
   play_next
