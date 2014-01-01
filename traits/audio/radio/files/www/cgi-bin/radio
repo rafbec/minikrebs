@@ -47,22 +47,7 @@ echo '
 
 echo '</head>
 <body>
-'
-
-# Display an error if USB sound card is not connected
-SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
-if [ "$SPEAKER" == "" ] ; then
-  echo '
-<div class="alert alert-error">
-    <a href="#" class="close" data-dismiss="alert">&times;</a>
-    <strong>Error!</strong> No USB sound device found. Please connect a compatible USB sound device.
-</div>
-</body>             
-</html>
-'
-fi
-
-echo '<div class="container theme-showcase">'
+<div class="container theme-showcase">'
 
 # For centering (begin)
 echo '
@@ -142,6 +127,7 @@ for SONG in "sunchyme" "orinoco flow" "toto africa" "wedding rain liz story" \
 "bolero ravel" "Tamee Harrison" ; do
   echo '<a href="?song='$SONG'">'$SONG'</a> | '
 done
+echo '<a href="?song=http://www.einstein-website.de/z_biography/einstein1930.mp3">Einstein</a>'
 
 echo '<p></p>'
 echo '<p><a class="btn btn-default btn-sm" role="button" href="/cgi-bin/luci/">Settings</a></p>'
@@ -189,10 +175,11 @@ if [ "$STRING" == "radiotime" ] ; then
     STREAM=$(wget "$STREAM" -U "" -O - -q | grep http | cut -d "=" -f 2 | head -n 1)  
     echo $STREAM
   fi
-  uci delete radio.ONCE
-  uci set radio.ONCE=playonce
-  uci set radio.ONCE.url="$STREAM"
-  uci set radio.ONCE.type=mp3
+  # uci delete radio.ONCE
+  RAND=$(tr -cd 0-9 </dev/urandom | head -c 3)
+  uci set radio.ONCE$RAND=playonce
+  uci set radio.ONCE$RAND.url="$STREAM"
+  uci set radio.ONCE$RAND.type=mp3
   killall madplay
 fi
 
@@ -265,18 +252,20 @@ if [ "$STRING" == "song" ] ; then
   SONG=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
   ENDING=$(echo $SONG| awk '{ print substr($0, length($0)-3, length($0))}')
   if [ "$ENDING" == ".mp3" ] ; then
-    uci delete radio.ONCE
-    uci set radio.ONCE=playonce
+    # uci delete radio.ONCE
+    RAND=$(tr -cd 0-9 </dev/urandom | head -c 3)
+    uci set radio.ONCE$RAND=playonce
     # We urldecode the song, since it is an URL which otherwise does not play
     SONG=$(printf $(echo "$SONG" | sed -e '1! d' -e 's/%/\\x/g'))
-    uci set radio.ONCE.url="$SONG"
-    uci set radio.ONCE.type=mp3
+    uci set radio.ONCE$RAND.url="$SONG"
+    uci set radio.ONCE$RAND.type=mp3
   else
     # We leave the song urlencoded, since it is input that way into a seach engine
-    uci delete radio.ONCE
-    uci set radio.ONCE=playonce
-    uci set radio.ONCE.title="$SONG" # This is DANGEROUS, what if some random rubbish is passed in?
-    uci set radio.ONCE.type=song
+    # uci delete radio.ONCE
+    RAND=$(tr -cd 0-9 </dev/urandom | head -c 3)
+    uci set radio.ONCE$RAND=playonce
+    uci set radio.ONCE$RAND.title="$SONG" # This is DANGEROUS, what if some random rubbish is passed in?
+    uci set radio.ONCE$RAND.type=song
   fi
   killall madplay
 fi
@@ -326,3 +315,4 @@ fi
 if [ "$QUERY_STRING" == "continue" ] ; then
   kill -SIGCONT $(pidof madplay)
 fi
+
