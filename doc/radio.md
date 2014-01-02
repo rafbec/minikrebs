@@ -28,6 +28,7 @@ TODO
 ----
 
 * Make the microcontroller optional while stil having IR control capability, use LIRC to receive and send IR codes, e.g., using http://www.lirc.org/ir-audio.html
+* Document and publish Arduino sketch to run on the microcontroller for IR receiving and sending
 
 Documentation
 =============
