@@ -15,7 +15,10 @@ The device will get an IP address via DHCP on wired Ethernet, and you can set up
 * No longer needed since firewall packet is removed  ~~Interfaces: Both LAN and WWAN should be green now and both should have an IP address~~
 * HTML interface should be reachable on both addresses
 
-If you have totally mis-configured the network and can't get in anymore, use "OpenWRT Failsafe" (using an Ethernet cable and the reset button)
+If you have totally mis-configured the network and can't get in anymore, use "OpenWet Failsafe" (using an Ethernet cable and the reset button)
+
+### Controlling over the web interface
+* http://192.168.0.19/cgi-bin/radio
 
 ### Setting up radio stations and remote control codes
 * http://192.168.0.19/cgi-bin/luci/admin/radio/stations
@@ -24,7 +27,7 @@ If you have totally mis-configured the network and can't get in anymore, use "Op
 TODO
 ----
 
-* Get rid of the Arduino, use LIRC to receive and send IR codes, e.g., using http://www.lirc.org/ir-audio.html
+* Make the microcontroller optional while stil having IR control capability, use LIRC to receive and send IR codes, e.g., using http://www.lirc.org/ir-audio.html
 
 Documentation
 =============
@@ -32,7 +35,7 @@ Documentation
 Purpose
 -------
 
-The purpose of this treat is to create a web radio player and podcast receiver. The hardware is based of a cheap router, which can easily be obtained on eBay at around 20 USD. Its unique features are:
+The purpose of this trait is to create a web radio player and podcast receiver. The hardware is based of a cheap router, which can easily be obtained on eBay at around 20 USD. Its unique features are:
 - Play web radio streams
 - Play podcasts
 - Connect wired ethernet or wireless LAN
@@ -103,7 +106,7 @@ This paragraph describes key aspects of the mode of operation of the application
 
 During bootup of the device, the init scripts are started. Among them is the radio script, which launches the arduinolisten script and the radioplayer script. The radioplayer script checks whether and USB sound card is present and a network connection is available, and then plays the startup sound. It then checks the configuration data for what has to be played next, and plays that tile using a combination of wget and madplay. Whenever the madplay process is killed, it checks what title has to be played next and plays that title. It also contains some logic to parse playlist files and to extract the URLs of the actual MP3 files from there.
 
-The radio CGI script can be accessed by the user at http://xx.xx.xx.xx/cgi-bin/radio. It changes the configuration data according to user input. If required, it also kills the madplay process in order for the radio player script to pick up the configuration change and play the next title.
+The radio CGI script can be accessed by the user at http://192.168.0.19/cgi-bin/radio. It changes the configuration data according to user input. If required, it also kills the madplay process in order for the radio player script to pick up the configuration change and play the next title.
 
 The arduinolisten script watches the serial connection for commands coming from the microcontroller, and changes the configuration data specifying the title that has to be played next. If required, it also kills the madplay process in order for the radio player script to pick up the configuration change and play the next title. 
 
