@@ -15,7 +15,7 @@ The device will get an IP address via DHCP on wired Ethernet, and you can set up
 * No longer needed since firewall packet is removed  ~~Interfaces: Both LAN and WWAN should be green now and both should have an IP address~~
 * HTML interface should be reachable on both addresses
 
-If you have totally mis-configured the network and can't get in anymore, use "OpenWet Failsafe" (using an Ethernet cable and the reset button)
+If you have totally mis-configured the network and can't get in anymore, use "OpenWrt Failsafe" (using an Ethernet cable and the reset button)
 
 ### Controlling over the web interface
 * http://192.168.0.19/cgi-bin/radio
