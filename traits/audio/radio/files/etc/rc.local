@@ -30,7 +30,16 @@ echo 1 > /sys/class/gpio/gpio29/value # isolated
 #  rmmod mac80211 cfg80211 compat aes_generic crypto_algapi
 #fi
 
-# Launch Bonjour
+# Enable sftp, work around https://trac.cyberduck.io/ticket/4161
+# Needs 44.5K but for me removes the need for nano on the device
+if [ ! -e /usr/libexec/sftp-server ] ; then
+  opkg update
+  opkg -d ram install openssh-sftp-server
+  mkdir -p /usr/libexec
+  cp /tmp/usr/lib/sftp-server /usr/libexec/
+fi
+
+# Launch Bonjour but do not install it since it is too large
 cd /tmp
 mkdir mDNSResponder
 cd mDNSResponder
@@ -49,6 +58,10 @@ $HOSTNAME Web Interface
 _http._tcp local
 80
 path=/cgi-bin/radio
+
+$HOSTNAME SFTP
+_sftp-ssh._tcp local
+22
 EOxF
 ./usr/bin/mDNSResponder  -f ./etc/mDNSResponder.conf &
 cd -
