@@ -20,6 +20,7 @@ You can use this firmware image generator to produce a firmware that does the fo
 - Sleep timer
 - Optionally, send infrared remote control codes to other devices, e.g. an amplifier
 
+```
     # If you want to build for a device other than the TP-LINK TL-WR703N, do:
     export PLATFORM=DIR505A1 # for D-Link DIR-505
     # Get ready
@@ -29,5 +30,6 @@ You can use this firmware image generator to produce a firmware that does the fo
     # Flash to the device - this asks for the root password of the device twice, then reboots
     # Note: OpenWRT must already be running on the device
     ./upgrade 192.168.0.19 # replace with the IP address of the device
+```
 
 For more information see doc/radio.md
