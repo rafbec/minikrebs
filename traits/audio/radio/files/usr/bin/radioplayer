@@ -7,6 +7,62 @@ set -o pipefail
 # Initialize
 uci get radio.next || uci set radio.next=1
 
+#####
+
+# Wait until we have Internet
+while true; do
+  ping -c1 google.com && break
+  sleep 1
+done
+
+#####
+
+# Enable sftp, work around https://trac.cyberduck.io/ticket/4161
+# Needs 44.5K but for me removes the need for nano on the device
+if [ ! -e /usr/libexec/sftp-server ] ; then
+  opkg update
+  opkg -d ram install openssh-sftp-server
+  mkdir -p /usr/libexec
+  cp /tmp/usr/lib/sftp-server /usr/libexec/
+fi
+
+#####
+
+# We do not use this currently. TODO: Move it to its own init script
+zeroconf_announce()
+{
+# Launch Bonjour but do not install it since it is too large
+if [ ! -e /tmp/usr/bin/mDNSResponder ] ; then
+cd /tmp
+mkdir mDNSResponder
+cd mDNSResponder
+wget http://downloads.openwrt.org/attitude_adjustment/12.09/ar71xx/generic/packages/mdns-utils_214.3.2-4_ar71xx.ipk
+tar xzf *.ipk
+tar xzf data.tar.gz
+rm *ipk *gz debian-binary
+rm -rf ./usr/bin/dns-sd ./usr/bin/mDNSClient ./usr/bin/mDNSIdentify ./usr/bin/mDNSNetMonitor ./usr/bin/mDNSProxyResponder ./usr/lib
+HOSTNAME=$(uci get system.@system[0].hostname)
+cat > ./etc/mDNSResponder.conf <<EOxF
+$HOSTNAME SSH
+_ssh._tcp. local
+22
+
+$HOSTNAME Web Interface
+_http._tcp local
+80
+path=/cgi-bin/radio
+
+$HOSTNAME SFTP
+_sftp-ssh._tcp local
+22
+EOxF
+./usr/bin/mDNSResponder  -f ./etc/mDNSResponder.conf &
+cd -
+fi
+}
+
+#####
+
 nr_to_name()
 {
   NUMBER_OF_STATIONS=$(uci show radio | grep -e "=station$" | wc -l)
@@ -162,12 +218,6 @@ play_next()
 #    uci set radio.next=$((NEXTNUM+1)) # Set but do not write to disk 
 #  fi
 }
-
-# Wait until we have Internet
-while true; do
-  ping -c1 google.com && break
-  sleep 1
-done
 
 # Play startup sound
 play http://irmagic.carina.uberspace.de/radio/startup.mp3
