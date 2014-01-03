@@ -1,32 +1,37 @@
-Customized OpenWRT image generator
+Customized OpenWrt image generator
 ==================================
 
-Based on http://shackspace.de/wiki/doku.php?id=project:minikrebs 
+This is a customized OpenWrt firmware image generator based on http://shackspace.de/wiki/doku.php?id=project:minikrebs 
 
-Build image that contains a webradio client
--------------------------------------------
+Build image that contains a web radio and podcast client
+--------------------------------------------------------
 
-    # If you want to build for a device other than the TP-LINK TL-WR703N, do:
-    export PLATFORM=DIR505A1 # for D-Link DIR-505
-    # Get ready
-    ./prepare radio
-    # Build the firmware image
-    ./builder/init
-    # Flash to the device - this asks for the root password of the device twice, then reboots
-    # Note: OpenWRT must already be running on the device
-    ./upgrade 192.168.0.19 # replace with the IP address of the device
+You can use this firmware image generator to produce a firmware that does the following:
+- Play web radio streams
+- Play podcasts
+- Connect wired ethernet or wireless LAN
+- Use station IDs/jingles or spoken announcements to identify the radio stream
+- Flip through predefined channels and podcasts using a regular infrared remote control
+- Use an HTML interface to control the player from any computer or mobile device in the household
+- Search for and play MP3 music files on the Internet
+- Search for and play radio stations and podcasts 
+- Discover radio stations and podcasts using a server-based repository of radio stations and podcasts
+- Find and play podcast episodes
+- Sleep timer
+- Optionally, send infrared remote control codes to other devices, e.g. an amplifier
 
-The device will get an IP address via DHCP on wired Ethernet, and default password is "minikrebs".
+```
+# If you want to build for a device other than the TP-LINK TL-WR703N, do:
+export PLATFORM=DIR505A1 # for D-Link DIR-505
+# Get ready
+./prepare radio
+# Build the firmware image
+./builder/init
+# Flash to the device - either using the OEM's web interface 
+# or using the script below if the router is already running OpenWrt - 
+# this asks for the root password of the device twice, then reboots
+# Note: OpenWrt must already be running on the device for this to work
+./upgrade 192.168.0.19 # replace with the IP address of the device
+```
 
-### Setting up WLAN client mode
-
-* Wifi: Scan, Join Network, Create / Assign firewall-zone: select lan (green)! (this is no longer needed since the firewall packet is no longer installed), Submit, Save and apply
-* Interfaces -> WWAN -> Advanced settings -> Override MAC address: Has the WRONG IP, so set IP+1, Save and apply
-* Interfaces: Both LAN and WWAN should be green now and both should have an IP address
-* HTML interface should be reachable on both addresses
-
-If you have totally mis-configured the network and can't get in anymore, use "OpenWRT Failsafe" (using an Ethernet cable and the reset button)
-
-### Setting up radio stations and remote control codes
-* http://192.168.0.19/cgi-bin/luci/admin/radio/stations
-* http://192.168.0.19/cgi-bin/luci/admin/radio/remote (this is for a 3.3V 16MHz Arduino to be hooked up to the router)
+For more information see doc/radio.md
