@@ -13,26 +13,6 @@ stty -F /dev/ttyATH0 cs8 57600 ignbrk -brkint -icrnl -imaxbel -opost -onlcr -isi
 SPEAKER=$(amixer scontrols | head -n 1 | cut -d "'" -f 2)
 LAST=0
 
-tune()
-{
-  # logger "Tune to $1"
-  # Determine what should be played next
-  if [ "$1" == "$LAST" ] ; then
-    return # Do nothing in this case, we are already tuned
-  fi
-  TUNE=$1
-  if [ "$TUNE" == "up" ] ; then
-    TUNE=$(($(uci get radio.next)+1))
-  fi
-  if [ "$TUNE" == "down" ] ; then
-    TUNE=$(($(uci get radio.next)-1))
-  fi
-  uci set radio.next=$TUNE
-  # Kill the currently running radio streams but not the radio script itself
-  killall -9 madplay wget 2>/dev/null
-  LAST=$TUNE
-}
-
 volume()
 {
   if [ "$1" == "up" ] ; then
