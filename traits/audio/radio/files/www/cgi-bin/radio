@@ -94,6 +94,8 @@ echo '
 <a href="?unmute" class="btn btn-default btn-sm" role="button"><i class="fa fa-bullhorn"></i> Unmute</a>
 <a href="?voldown" class="btn btn-default btn-sm" role="button">&nbsp;<i class="fa fa-volume-down"></i>&nbsp;</a>
 <a href="?volup" class="btn btn-default btn-sm" role="button">&nbsp;<i class="fa fa-volume-up"></i>&nbsp;</a>
+<a href="?radiostart" class="btn btn-default btn-sm" role="button">Start</a>
+<a href="?radiostop" class="btn btn-default btn-sm" role="button">Stop</a>
 </div>
 </center>
 <p></p>
@@ -314,5 +316,13 @@ fi
 
 if [ "$QUERY_STRING" == "continue" ] ; then
   kill -SIGCONT $(pidof madplay)
+fi
+
+if [ "$QUERY_STRING" == "radiostart" ] ; then
+  /etc/init.d/radio start
+fi
+
+if [ "$QUERY_STRING" == "radiostop" ] ; then
+  /etc/init.d/radio stop
 fi
 
