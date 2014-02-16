@@ -24,12 +24,6 @@ If you have totally mis-configured the network and can't get in anymore, use "Op
 * http://192.168.0.19/cgi-bin/luci/admin/radio/stations
 * http://192.168.0.19/cgi-bin/luci/admin/radio/remote (this is for a 3.3V 16MHz Arduino to be hooked up to the router)
 
-TODO
-----
-
-* Make the microcontroller optional while stil having IR control capability, use LIRC to receive and send IR codes, e.g., using http://www.lirc.org/ir-audio.html
-* Document and publish Arduino sketch to run on the microcontroller for IR receiving and sending
-
 Documentation
 =============
 
@@ -41,7 +35,8 @@ The purpose of this trait is to create a web radio player and podcast receiver. 
 - Play podcasts
 - Connect wired ethernet or wireless LAN
 - Use station IDs/jingles or spoken announcements to identify the radio stream
-- Flip through predefined channels and podcasts using a regular infrared remote control
+- Flip through predefined stations and podcasts using a regular infrared remote control
+- Flip through stations using the hardware buttons on the USB soundcard
 - Use an HTML interface to control the player from any computer or mobile device in the household
 - Search for and play MP3 music files on the Internet
 - Search for and play radio stations and podcasts 
@@ -109,6 +104,15 @@ During bootup of the device, the init scripts are started. Among them is the rad
 
 The radio CGI script can be accessed by the user at http://192.168.0.19/cgi-bin/radio. It changes the configuration data according to user input. If required, it also kills the madplay process in order for the radio player script to pick up the configuration change and play the next title.
 
+The application triggerhappy watches /dev/input/event0 which in turn watches the hardware buttons built into the USB soundcard. If buttons on the USB soundcard are pressed, actions like tuning to another stations are executed. In the default configuration, pressing the "volume up" button on the USB soundcard switches to the next radio station or podcast, while pressing the "volume down" button on the USB soundcard switches to the previous one. This behavior can be changed in /etc/triggerhappy/triggers.d/radio.conf. Please note that for this to work, the USB soundcard needs to present itself to the host as a USB HID device. I have found that sound cards describing themselves as "C-Media USB Headphone Set" work well (USB vendor id 0x0d8c, device id  0x000c)  wide others from the same chip manufacturer do not (device id 0x000e). Other soundcards may require changes in the triggerhappy configuration. For this to work, the packages kmod-usb-hid kmod-input-evdev triggerhappy have been added to the firmware image.
+
 The arduinolisten script watches the serial connection for commands coming from the microcontroller, and changes the configuration data specifying the title that has to be played next. If required, it also kills the madplay process in order for the radio player script to pick up the configuration change and play the next title. 
 
 If other input methods then an infrared receiver is connected to the microcontroller or the web interface are needed, these input methods need to replicate the behavior of the radio CGI script or the arduinolisten script.
+
+TODO
+----
+
+* Make the microcontroller optional while stil having IR control capability, use LIRC to receive and send IR codes, e.g., using http://www.lirc.org/ir-audio.html - help me on https://forum.openwrt.org/viewtopic.php?id=48008
+* Document and publish Arduino sketch to run on the microcontroller for IR receiving and sending
+* Use mDNSResponder or, better, tinysvcmdns, to announce services in the network via zeroconf (mDNSResponder is too large to fit into the image) - help me on https://forum.openwrt.org/viewtopic.php?id=48101
