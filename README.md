@@ -23,6 +23,7 @@ You can use this firmware image generator to produce a firmware that does the fo
 ```
 # If you want to build for a device other than the TP-LINK TL-WR703N, do:
 export PLATFORM=DIR505A1 # for D-Link DIR-505
+export PLATFORM=TLWR710 # for TP-LINK TL-WR710N
 # Get ready
 ./prepare radio
 # Build the firmware image
