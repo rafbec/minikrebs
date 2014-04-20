@@ -113,6 +113,6 @@ If other input methods then an infrared receiver is connected to the microcontro
 TODO
 ----
 
-* Make the microcontroller optional while stil having IR control capability, use LIRC to receive and send IR codes, e.g., using http://www.lirc.org/ir-audio.html - help me on https://forum.openwrt.org/viewtopic.php?id=48008
+* Make the microcontroller optional while still having IR control capability, use LIRC to receive and send IR codes, e.g., using http://www.lirc.org/ir-audio.html - help me on https://forum.openwrt.org/viewtopic.php?id=48008
 * Document and publish Arduino sketch to run on the microcontroller for IR receiving and sending
 * Use mDNSResponder or, better, tinysvcmdns, to announce services in the network via zeroconf (mDNSResponder is too large to fit into the image) - help me on https://forum.openwrt.org/viewtopic.php?id=48101
