@@ -2,6 +2,8 @@
 
 set -e 
 
+killall arduinolisten
+
 # GPIO 29 is on "pin" R17-S (south end of resistor 17)
 # This is connected to the Arudino reset pin, hence we need to change it from "grounded" to "isolated"
 # so that the Arduino can start running
