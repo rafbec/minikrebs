@@ -18,10 +18,10 @@ config station 'SWR2'
 	option sidtype 'jingle'
 
 config station 'swrinfo'
-	option type 'mp3'
-	option url 'http://swr-mp3-m-contra.akacast.akamaistream.net/7/173/137140/v1/gnl.akacast.akamaistream.net/swr-mp3-m-contra'
 	option sidtype 'jingle'
 	option sidurl 'http://irmagic.carina.uberspace.de/radio/swrinfo.mp3'
+	option type 'pls'
+	option url 'http://mp3-live.swr.de/contra_s.m3u'
 
 config station 'DLF'
 	option type 'pls'
