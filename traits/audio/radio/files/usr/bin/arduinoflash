@@ -2,6 +2,8 @@
 
 set -v
 
+killall arduinolisten
+
 export PATH=/tmp/usr/bin/:$PATH
 export LD_LIBRARY_PATH=/tmp/usr/lib/:$LD_LIBRARY_PATH
 
