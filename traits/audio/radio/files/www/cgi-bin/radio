@@ -96,6 +96,7 @@ echo '
 <a href="?volup" class="btn btn-default btn-sm" role="button">&nbsp;<i class="fa fa-volume-up"></i>&nbsp;</a>
 <a href="?radiostart" class="btn btn-default btn-sm" role="button">Start</a>
 <a href="?radiostop" class="btn btn-default btn-sm" role="button">Stop</a>
+<a href="?squeezestart" class="btn btn-default btn-sm" role="button">Squeeze</a></div>
 </div>
 </center>
 <p></p>
@@ -319,10 +320,24 @@ if [ "$QUERY_STRING" == "continue" ] ; then
 fi
 
 if [ "$QUERY_STRING" == "radiostart" ] ; then
+  /etc/init.d/squeezelite stop
   /etc/init.d/radio start
 fi
 
 if [ "$QUERY_STRING" == "radiostop" ] ; then
+  /etc/init.d/squeezelite stop
   /etc/init.d/radio stop
+  killall madplay wget
 fi
 
+if [ "$QUERY_STRING" == "squeezestart" ] ; then
+  /etc/init.d/radio stop
+  killall madplay wget
+  # FIXME: STARTING IT MANUALLY SINCE THE /etc/init.d SCRIPT DOES NOT WORK
+    cd /tmp
+    ls ./squeezelite-mips-ar71xx >/dev/null 2>&1 || wget http://squeezelite.googlecode.com/files/squeezelite-mips-ar71xx
+    chmod a+x ./squeezelite-mips-ar71xx
+    # FIXME: Strangely the following works ONLY with -d and ONLY without -z 
+    ./squeezelite-mips-ar71xx -n $(uci get system.@system[0].hostname) -d all=info -m xx:xx:xx:xx:xx:xx -s mysqueezebox.com 
+    cd 
+fi
