@@ -1,0 +1,13 @@
+Captive portal
+
+Run
+ndsctl status
+to see the configuration and the authenticated clients.
+
+Run
+ndsctl deauth 192.168.0.12
+to make the user with IP 192.168.0.12 authenticate again (can also use MAC address)
+
+Start 
+nodogsplash -f -d 7
+to see verbose output
