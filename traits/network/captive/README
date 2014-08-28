@@ -1,5 +1,7 @@
 Captive portal
 
+NOTE: The IP address of the Ethernet interface is hardcoded to 192.168.0.14 in /etc/configuration/network. You need to change it if you would like to use another address.
+
 Run
 ndsctl status
 to see the configuration and the authenticated clients.
