@@ -24,8 +24,10 @@ STOP=65
 
 start() {
    	echo "Starting nodogsplash ... "
-        iptables -A POSTROUTING -t nat -j SNAT --to-source 192.168.0.77 ##### Otherwise we do not get network connection after the splash
-        sleep 3 ##### Otherwise it does not start
+        sleep 3 #####
+	MYIP=$(ifconfig | grep Bcast | head -n 1 | cut -d ":" -f 2 | cut -d " " -f 1)
+	iptables -A POSTROUTING -t nat -j SNAT --to-source $MYIP ##### Otherwise we do not get network connection after the splash
+	sleep 3 ##### Otherwise it does not start
 	if $WD_DIR/ndsctl status 2> /dev/null; then
 		echo "FAILED:  nodogsplash already running"
     	else
