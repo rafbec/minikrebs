@@ -189,7 +189,7 @@ fi
 # Search radiotime.com
 if [ "$STRING" == "q" ] ; then
   Q=$(echo $REQUEST_URI | cut -d "?" -f 2 | cut -d "=" -f 2)
-  REQUEST_URI="?browse=http://opml.radiotime.com/Search.ashx?name=$Q&formats=mp3"
+  REQUEST_URI="?browse=http://opml.radiotime.com/Search.ashx?query=$Q&formats=mp3"
   STRING="browse"
 fi
 
