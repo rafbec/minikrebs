@@ -97,6 +97,7 @@ echo '
 <a href="?radiostart" class="btn btn-default btn-sm" role="button">Start</a>
 <a href="?radiostop" class="btn btn-default btn-sm" role="button">Stop</a>
 <a href="?squeezestart" class="btn btn-default btn-sm" role="button">Squeeze</a></div>
+<a href="?shairport" class="btn btn-default btn-sm" role="button">Shairport</a>
 </div>
 </center>
 <p></p>
@@ -328,6 +329,7 @@ if [ "$QUERY_STRING" == "radiostop" ] ; then
   /etc/init.d/squeezelite stop
   /etc/init.d/radio stop
   killall madplay wget
+  killall shairport-sync
 fi
 
 if [ "$QUERY_STRING" == "squeezestart" ] ; then
@@ -340,4 +342,28 @@ if [ "$QUERY_STRING" == "squeezestart" ] ; then
     # FIXME: Strangely the following works ONLY with -d and ONLY without -z 
     ./squeezelite-mips-ar71xx -n $(uci get system.@system[0].hostname) -d all=info -m xx:xx:xx:xx:xx:xx -s mysqueezebox.com 
     cd 
+fi
+
+# There is not enough space to save the software on the device, but we can load it at runtime
+if [ "$QUERY_STRING" == "shairport" ] ; then
+  if [ ! -d /tmp/shairport-sync ] ; then
+    mkdir /tmp/shairport-sync
+    cd /tmp/shairport-sync
+    FILES=$(wget -q "http://irmagic.carina.uberspace.de/openwrt/binaries/shairport-sync/Packages" -O - | grep "Filename: ")
+    for FILE in $FILES ; do
+      wget "http://irmagic.carina.uberspace.de/openwrt/binaries/shairport-sync/$FILE"
+      tar zxpvf "$FILE"
+      tar zxpvf ./data.tar.gz
+      rm "$FILE"
+    done
+    cd usr/lib/
+    wget "http://irmagic.carina.uberspace.de/openwrt/binaries/shairport-sync/libssl.so.1.0.0"
+    wget "http://irmagic.carina.uberspace.de/openwrt/binaries/shairport-sync/libcrypto.so.1.0.0"
+    cd -
+  fi
+  killall wget
+  /etc/init.d/radio stop
+  cd /tmp/shairport-sync/
+  export LD_LIBRARY_PATH=./usr/lib/
+  ./usr/bin/shairport-sync -d -a $(uci get system.@system[0].hostname)
 fi
