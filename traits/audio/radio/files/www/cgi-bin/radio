@@ -322,6 +322,7 @@ fi
 
 if [ "$QUERY_STRING" == "radiostart" ] ; then
   /etc/init.d/squeezelite stop
+  killall shairport-sync
   /etc/init.d/radio start
 fi
 
@@ -335,6 +336,7 @@ fi
 if [ "$QUERY_STRING" == "squeezestart" ] ; then
   /etc/init.d/radio stop
   killall madplay wget
+  killall shairport-sync
   # FIXME: STARTING IT MANUALLY SINCE THE /etc/init.d SCRIPT DOES NOT WORK
     cd /tmp
     ls ./squeezelite-mips-ar71xx >/dev/null 2>&1 || wget http://squeezelite.googlecode.com/files/squeezelite-mips-ar71xx
