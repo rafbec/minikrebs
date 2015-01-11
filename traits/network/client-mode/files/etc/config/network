@@ -11,3 +11,7 @@ config interface 'lan0'
 config interface 'lan1'
         option ifname 'eth1'
         option proto 'dhcp'
+
+config interface 'lan2'
+        option ifname 'eth0.1'
+        option proto 'dhcp'
