@@ -36,3 +36,26 @@ export PLATFORM=TLWR710 # for TP-LINK TL-WR710N
 ```
 
 For more information see doc/radio.md
+
+Build image for 7 EUR router A5-V11 
+-----------------------------------
+
+This whitelabel Ralink/Mediatek RT5350F-based router is sold on eBay from Chinese sellers for around 8 USD (shipped) as of January 2015, which is around a third of the TL-WR703N. It has a white housing with silver print "3G/4G Router 150M". On the PCB it says "A5-V11". On the PCB it has a W9825G6EH-75 RAM (32 MB) RAM chip and 4 MB SPI ROM. Ethernet MAC address starts with 2C:67:FB:. As of OpenWrt trunk r43793 it is supported by the Image Generator. The factory image can successfully be flashed from the stock firmware GUI without having to open the device or mess with uboot manually.
+
+__CAUTION: This device uses eth0.1 rather than eth0 or eth1, so be aware of that in order for the wired Ethernet to work. You need to change /etc/configuration/network accordingly or the device will not be accessible after flashing without using a serial adapter to unbrick.__
+
+To build for this device, move or remove any pre-existing builder/ directory, and change the IMAGEBUILDER_URL so that it points to a "trunk/ramips" ImageBuilder URL like `IMAGEBUILDER_URL="https://downloads.openwrt.org/snapshots/trunk/ramips/OpenWrt-ImageBuilder-ramips_rt305x-for-linux-x86_64.tar.bz2"`.
+
+Now you can build for this platform like so:
+```
+export PLATFORM=A5-V11 
+./prepare radio
+./builder/init
+```
+
+NOTE: As of January 2015, this errors out due to madplay and ser2net not being available in trunk any more.
+```
+Collected errors:
+ * opkg_install_cmd: Cannot install package madplay.
+ * opkg_install_cmd: Cannot install package ser2net.
+```
