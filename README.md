@@ -61,7 +61,7 @@ Collected errors:
  * opkg_install_cmd: Cannot install package madplay.
  * opkg_install_cmd: Cannot install package ser2net.
 ```
-Before flashing, make sure that /etc/config/network looks like this (note te eth0.1):
+Before flashing, make sure that /etc/config/network looks like this (note the eth0.1):
 ```
 config interface 'loopback'
         option ifname 'lo'
