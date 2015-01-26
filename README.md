@@ -46,7 +46,7 @@ This [whitelabel A5-V11 Ralink/Mediatek RT5350F-based router](http://wiki.openwr
 
 __CAUTION: This device uses eth0.1 rather than eth0 or eth1, so be aware of that in order for the wired Ethernet to work. You need to change /etc/configuration/network accordingly or the device will not be accessible after flashing without using a serial adapter to unbrick (or possibly OpenWrt Failsafe).__
 
-To build for this device, move or remove any pre-existing builder/ directory, and change the IMAGEBUILDER_URL so that it points to a "trunk/ramips" ImageBuilder URL like `IMAGEBUILDER_URL="https://downloads.openwrt.org/snapshots/trunk/ramips/OpenWrt-ImageBuilder-ramips_rt305x-for-linux-x86_64.tar.bz2"`.
+To build for this device, move or remove any pre-existing builder/ directory, and change the IMAGEBUILDER_URL so that it points to a "trunk/ramips/generic" ImageBuilder URL like `IMAGEBUILDER_URL="https://downloads.openwrt.org/snapshots/trunk/ramips/generic/OpenWrt-ImageBuilder-ramips_rt305x-for-linux-x86_64.tar.bz2"`.
 
 Now you can build for this platform like so:
 ```
@@ -55,12 +55,6 @@ export PLATFORM=A5-V11
 ./builder/init
 ```
 
-NOTE: As of January 2015, this errors out due to madplay and ser2net not being available in trunk any more.
-```
-Collected errors:
- * opkg_install_cmd: Cannot install package madplay.
- * opkg_install_cmd: Cannot install package ser2net.
-```
 Before flashing, make sure that /etc/config/network looks like this (note the eth0.1):
 ```
 config interface 'loopback'
