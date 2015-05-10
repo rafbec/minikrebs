@@ -69,9 +69,22 @@ The following hardware is optional:
 - An ATmega328P microcontroller and a 16 MHz crystal
 - Soldering equipment
 
+Soldering
+---------
+* Solder Arduino pin VCC to WR703N +3.3V
+* Solder Arduino pin GND to WR703N Ground
+* Solder Arduino pin RST to WR703N GPIO 29 signal = R17-South
+* Solder Arduino pin RX to WR703N TP_OUT signal = C55-West
+* Solder Arduino pin TX to WR703N TP_IN signal = R82-North
+* Solder TSOP Signal to Arduino RECV_PIN = Pin 8
+* Solder TSOP GND to Arduino GND
+* Solder TSOP + to Arduino VCC
 
-Development environment
------------------------
+Sketch
+---------
+
+I use sendandreceive.ino from https://gist.github.com/probonopd/5793692
+
 Development environment
 -----------------------
 
