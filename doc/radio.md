@@ -69,6 +69,9 @@ The following hardware is optional:
 - An ATmega328P microcontroller and a 16 MHz crystal
 - Soldering equipment
 
+
+Development environment
+-----------------------
 Development environment
 -----------------------
 
