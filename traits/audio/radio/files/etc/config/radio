@@ -286,9 +286,10 @@ config rcc '756247D3'
 	option command 'pumpon'
 
 config rcc '700FD6BB'
-	option repeat '0'
-	option command 'echo 0 > /sys/class/gpio/gpio8/value'
+        option repeat '0'
+        option command '/etc/init.d/radio stop'
 
 config rcc 'BB17FD37'
-	option repeat '0'
-	option command 'echo 1 > /sys/class/gpio/gpio8/value'
+        option repeat '0'
+        option command '/etc/init.d/radio start'
+
