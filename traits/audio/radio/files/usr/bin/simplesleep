@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Not clean
+killall sleep
+
+NEWMINS=90
+NEWSECS=$(($NEWMINS*60)) 
+
+sleep $NEWSECS ; /etc/init.d/radio stop
