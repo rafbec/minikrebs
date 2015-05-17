@@ -293,3 +293,6 @@ config rcc 'BB17FD37'
         option repeat '0'
         option command '/etc/init.d/radio start'
 
+config rcc 'E3D457F5'
+        option repeat '0'
+        option command 'simplesleep'
